@@ -95,7 +95,7 @@ var JsSyntaxEnum = {
   // ES13
   TopLevelAwait: {
     selector: 'Program>ExpressionStatement>AwaitExpression',
-    name: '顶级 await'
+    name: '顶层 await'
   },
   ClassPrivateMember: {
     selector: 'ClassBody PrivateIdentifier',
