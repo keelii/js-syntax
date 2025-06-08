@@ -14,8 +14,8 @@ Deno.serve(async (req) => {
   switch (url.pathname) {
     case "/":
       return new Response((await Deno.open("./index.html")).readable);
-    case "/editor.js":
-      return new Response((await Deno.open("./editor.js")).readable);
+    case "/index.min.js":
+      return new Response((await Deno.open("./index.min.js")).readable);
     default:
       return new Response("Not Found", {
         status: 404,

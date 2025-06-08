@@ -1,8 +1,9 @@
 {
-  "name": "codemirror",
+  "name": "js-syntax",
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
+    "build": "./node_modules/.bin/esbuild index.js --bundle --minify --outfile=index.min.js --watch",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -17,5 +18,8 @@
     "acorn-jsx": "^5.3.2",
     "codemirror": "^6.0.1",
     "esquery": "^1.6.0"
+  },
+  "devDependencies": {
+    "esbuild": "^0.25.5"
   }
 }
