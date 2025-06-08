@@ -58,6 +58,21 @@
           display: inline-flex;
           align-items: center;
       }
+      .syntaxs {
+          padding: 2em 5em;
+          margin: 0;
+      }
+      .syntax-item {
+          list-style: none;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          border-bottom: 1px dotted #eee;
+          padding: 0.2em 0;
+      }
+      .syntax-item .en {
+          color: #666;
+      }
   </style>
 </head>
 <body>
@@ -81,17 +96,17 @@
 
 <script>
     Split(['#split-0', '#split-1'])
+
     function wrapCode() {
         window.editorView.toggleWrap()
     }
     function formatCode() {
         const content = window.editorView.getContent()
         const results = beautifier.js(content)
-
         window.editorView.setContent(results)
     }
-    function makeSelection(l, c) {
-        window.editorView.setSelection(l, c)
+    function makeSelection(query) {
+        window.editorView.setSelection(query)
     }
 </script>
 <script src="./editor.js"></script>
@@ -102,18 +117,16 @@
         if (Object.keys(ret).length > 0) {
             let html = ""
             for (let key in ret) {
-                html += `<li style="list-style: none;">
-            <a style="text-decoration: none" onclick="makeSelection(${ret[key][0].start}, ${ret[key][0].end})" href="javascript:;">☉</a>
-            ${key}
+                html += `<li class="syntax-item">
+                <span>
+                    <a style="text-decoration: none" onclick="makeSelection(${JSON.stringify(ret[key].query.map(q => ([q.start, q.end])))})" href="javascript:;">☉</a>
+                    <strong>${ret[key].syntax.name}</strong>
+                </span>
+                <span class="en">${key} (${ret[key].query.length})</span>
             </li>`
-                // html += `
-                // <dl onclick="makeSelection(${ret[key][0].start}, ${ret[key][0].end})">
-                //   <dt>${key}</dt>
-                //   <!--<dd>${JSON.stringify(ret[key])}</dd>-->
-                // </dl>`
             }
             if (html) {
-                document.querySelector("#split-1").innerHTML = `<ul>${html}</ul>`;
+                document.querySelector("#split-1").innerHTML = `<ul class="syntaxs">${html}</ul>`;
             }
         }
     }

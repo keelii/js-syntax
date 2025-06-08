@@ -128,84 +128,108 @@ window.editorView.parse = (code) => {
 
 const JsSyntaxEnum = {
     // ES6
-    BlockScopedVar: {
-        selector: "VariableDeclaration[kind=let],VariableDeclaration[kind=const]"
+    LetConst: {
+        selector: "VariableDeclaration[kind=let],VariableDeclaration[kind=const]",
+        name: "块级作用域变量"
     },
     TemplateLiterals: {
-        selector: "TemplateLiteral"
+        selector: "TemplateLiteral",
+        name: "模板字符串"
     },
     DestructuringAssignment: {
-        selector: "AssignmentExpression>ArrayPattern,VariableDeclarator>ObjectPattern"
+        selector: "AssignmentExpression>ArrayPattern,VariableDeclarator>ObjectPattern",
+      name: "解构赋值"
     },
     ArrowFunctions: {
-        selector: "ArrowFunctionExpression"
+        selector: "ArrowFunctionExpression",
+      name: "箭头函数"
     },
     ObjectInitializer: {
-        selector: "ObjectExpression Property[shorthand=true]"
+        selector: "ObjectExpression Property[shorthand=true]",
+      name: "对象字面量简写"
     },
     ForOf: {
-        selector: "ForOfStatement[await=false]"
+        selector: "ForOfStatement[await=false]",
+      name: "for...of 循环"
     },
     DefaultParameters: {
-        selector: "FunctionDeclaration>AssignmentPattern,ArrowFunctionExpression>AssignmentPattern"
+        selector: "FunctionDeclaration>AssignmentPattern,ArrowFunctionExpression>AssignmentPattern",
+      name: "默认参数"
     },
     SpreadSyntax: {
-        selector: "SpreadElement"
+        selector: "SpreadElement",
+      name: "展开语法"
     },
     Class: {
-        selector: "ClassDeclaration"
+        selector: "ClassDeclaration",
+      name: "类定义"
     },
     ImportExport: {
-        selector: "ImportDeclaration,ExportNamedDeclaration,ExportAllDeclaration"
+        selector: "ImportDeclaration,ExportNamedDeclaration,ExportAllDeclaration",
+      name: "模块导入导出"
     },
     Generator: {
-        selector: "[generator=true]"
+        selector: "[generator=true]",
+      name: "生成器函数"
     },
     // ES7
     Exponentiation: {
-        selector: "BinaryExpression[operator='**']"
+        selector: "BinaryExpression[operator='**']",
+      name: "指数运算符"
     },
     // ES8
     AsyncAwait: {
-        selector: "[async=true]"
+        selector: "[async=true]",
+      "name": "异步函数"
     },
     // ES9
     RestParameters: {
-        selector: "FunctionDeclaration > RestElement"
+        selector: "FunctionDeclaration > RestElement",
+      name: "剩余参数"
     },
     ForAwaitOf: {
-        selector: "ForOfStatement[await=true]"
+        selector: "ForOfStatement[await=true]",
+      name: "异步迭代"
     },
     // ES10
     OptionalCatchBinding: {
-        selector: "CatchClause[param=null]"
+        selector: "CatchClause[param=null]",
+      name: "可选的 catch 绑定"
     },
     // ES11
     OptionalChaining: {
-        selector: "ChainExpression"
+        selector: "ChainExpression",
+      name: "可选链"
     },
     NullishCoalescing: {
-        selector: "LogicalExpression[operator='??']"
+        selector: "LogicalExpression[operator='??']",
+      name: "空值合并运算符"
     },
     DynamicImport: {
-        selector: "ImportExpression"
+        selector: "ImportExpression",
+      name: "动态导入"
     },
     // ES12
     LogicalOrAssignment: {
-        selector: "AssignmentExpression[operator='??='],AssignmentExpression[operator='||=']"
+        selector: "AssignmentExpression[operator='??='],AssignmentExpression[operator='||=']",
+      name: "逻辑或赋值运算符"
     },
     NumberSeparator: {
-        selector: "Literal[raw=/^\\d_\\d$/]"
+        selector: "Literal[raw=/^\\d_\\d$/]",
+      name: "数字分隔符"
     },
     // ES13
     TopLevelAwait: {
-        selector: "Program>ExpressionStatement>AwaitExpression"
+        selector: "Program>ExpressionStatement>AwaitExpression",
+      name: "顶级 await"
     },
     ClassPrivateMember: {
-        selector: "ClassBody PrivateIdentifier"
+        selector: "ClassBody PrivateIdentifier",
+      name: "类私有成员"
     },
     ClassStaticBlock: {
-        selector: "ClassBody>PropertyDefinition[static=true] ObjectExpression"
+        selector: "ClassBody>PropertyDefinition[static=true] ObjectExpression",
+      name: "类静态块"
     },
 }
 
@@ -228,7 +252,10 @@ window.editorView.detectSyntax = () => {
         try {
             const ret = esquery.match(ast, JsSyntaxEnum[key].__selector)
             if (ret && ret.length > 0) {
-                result[key] = ret;
+                result[key] = {
+                  query: ret,
+                  syntax: JsSyntaxEnum[key]
+                };
             }
         } catch (e) {
             console.error(e);
@@ -237,10 +264,10 @@ window.editorView.detectSyntax = () => {
     return result;
 }
 
-window.editorView.setSelection = (s, e) => {
+window.editorView.setSelection = (locs) => {
     window.editorView.dispatch({
         selection: EditorSelection.create([
-            EditorSelection.range(s, e),
+            ...locs.map(loc => EditorSelection.range(loc[0], loc[1])),
             EditorSelection.cursor(0)
         ], 1)
     })
