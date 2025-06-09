@@ -48,7 +48,6 @@ class B {
 `
 
 var contentChange = new CustomEvent('contentChange', {});
-
 var updateListenerExtension = EditorView.updateListener.of(function (update) {
     if (update.docChanged) {
         window.dispatchEvent(contentChange)
@@ -101,11 +100,8 @@ window.editorView.parse = function (code) {
             onComment: (a, b, s, e) => {
                 if (s === 0) {
                     hashBang = {
-                        syntax: JsSyntaxEnum.Hashbang,
-                        query: [{
-                            start: s,
-                            end: e,
-                        }]
+                        start: s,
+                        end: e,
                     }
                 }
             }
@@ -126,7 +122,11 @@ window.editorView.detectSyntax = function () {
     var result = {};
 
     if (ast._hashBang) {
-        result.Hashbang = ast._hashBang;
+        result.Hashbang = {
+            active: 0,
+            syntax: JsSyntaxEnum.Hashbang,
+            query: [ast._hashBang]
+        };
     }
 
     for (var key in JsSyntaxEnum) {
@@ -135,6 +135,7 @@ window.editorView.detectSyntax = function () {
             // console.debug(key, ret, JsSyntaxEnum[key].__selector)
             if (ret && ret.length > 0) {
                 result[key] = {
+                    active: 0,
                     query: ret,
                     syntax: JsSyntaxEnum[key]
                 };
@@ -150,19 +151,47 @@ function scrollToPos(start) {
     window.editorView.dispatch({
         effects: EditorView.scrollIntoView(pos, {
             y: "center",
-            x: "start",
+            x: "nearest",
         }),
     });
 }
-window.editorView.setSelection = function (locs) {
+window.editorView.setSelection = function (ret, key, shiftKey) {
+    if (shiftKey && ret[key].active === 0) {
+        ret[key].active = ret[key].query.length + 1
+    }
+
+    if (shiftKey) {
+        ret[key].active--
+    } else {
+        ret[key].active++
+    }
+
+    var active = ret[key].active - 1
+    var query = ret[key].query[active]
+    var activeEl = document.querySelector(`#active-${key}`);
+
+    if (active < 0 || active >= ret[key].query.length) {
+        // console.warn(`No more ${key} syntax found!`, active, ret[key].query.length)
+        window.editorView.dispatch({
+            selection: { anchor: window.editorView.state.selection.main.from },
+        });
+        activeEl.innerText = 0
+
+        if (!shiftKey && ret[key].active >= ret[key].query.length) {
+            ret[key].active = 0
+        }
+
+        return;
+    }
+
     var selection = EditorSelection.create([
-        ...locs.map(loc => EditorSelection.range(loc[0], loc[1])),
+        EditorSelection.range(query.start, query.end),
         EditorSelection.cursor(0)
     ], 1)
-    window.editorView.dispatch({
-        selection,
-    })
-    scrollToPos(locs[0][0])
+    window.editorView.dispatch({ selection })
+    scrollToPos(query.start)
+
+    activeEl.innerText = ret[key].active;
 }
 
 function detectSyntax() {
@@ -170,20 +199,23 @@ function detectSyntax() {
     var tar = document.querySelector('#split-1')
 
     if (Object.keys(ret).length > 0) {
+        tar.addEventListener("click", function (e) {
+            if (e.target.classList.contains("locater")) {
+                var key = e.target.getAttribute("data-key");
+                window.editorView.setSelection(ret, key, e.shiftKey);
+            }
+        })
         var html = ''
 
         for (var key in ret) {
-            var clickFn = `window.editorView.setSelection(${JSON.stringify(ret[key].query.map(function (q) {
-                return [q.start, q.end]
-            }))})`
             html += `
-                <li class="syntax-item">
-                    <span>
-                        <a onclick="${clickFn}" href="javascript:;">☉</a>
-                        <strong>${ret[key].syntax.name}</strong>
-                    </span>
-                    <span class="en">${key} (${ret[key].query.length})</span>
-                </li>`
+            <li class="syntax-item">
+                <span>
+                    <a class="locater" data-key="${key}" href="javascript:;">☉</a>
+                    <strong>${ret[key].syntax.name}</strong>
+                </span>
+                <span class="en">${key} (<span id="active-${key}">${ret[key].active}</span>/${ret[key].query.length})</span>
+            </li>`
         }
         if (html) {
             tar.innerHTML = `<ul class="syntaxs">${html}</ul>`;
