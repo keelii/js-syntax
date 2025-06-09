@@ -1,173 +1,193 @@
 <!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>JS Syntax</title>
-    <meta name="description" content="JavaScript newer syntax(ES6+) detection and code formatting tool.">
-    <script src="https://unpkg.com/js-beautify@1.15.4/js/lib/beautifier.min.js"></script>
-    <script src="https://unpkg.com/split.js@1.6.5/dist/split.min.js"></script>
-    <style>
-        body, html, .split {
-            height: 100%
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>JS Syntax</title>
+  <meta name="description"
+        content="JavaScript newer syntax(ES6+) detection and code formatting tool.">
+  <script
+    src="https://unpkg.com/js-beautify@1.15.4/js/lib/beautifier.min.js"></script>
+  <script src="https://unpkg.com/split.js@1.6.5/dist/split.min.js"></script>
+  <style>
+      body, html, .split {
+          height: 100%
+      }
 
-        body {
-            margin: 0;
-        }
-        a { text-decoration: none; }
+      body {
+          margin: 0;
+      }
 
-        #split-0, #split-1 {
-            position: relative;
-            /*padding: 10px;*/
-        }
+      a {
+          text-decoration: none;
+      }
 
-        #split-1 {
-            overflow-y: auto;
-            padding: 10px;
-        }
+      #split-0, #split-1 {
+          position: relative;
+          /*padding: 10px;*/
+      }
 
-        .split {
-            display: flex;
-            flex-direction: row;
-        }
+      #split-1 {
+          overflow-y: auto;
+          padding: 10px;
+      }
 
-        .gutter {
-            background-color: #eee;
-            background-repeat: no-repeat;
-            background-position: 50%;
-        }
+      .split {
+          display: flex;
+          flex-direction: row;
+      }
 
-        .gutter.gutter-horizontal {
-            background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAeCAYAAADkftS9AAAAIklEQVQoU2M4c+bMfxAGAgYYmwGrIIiDjrELjpo5aiZeMwF+yNnOs5KSvgAAAABJRU5ErkJggg==');
-            cursor: col-resize;
-        }
+      .gutter {
+          background-color: #eee;
+          background-repeat: no-repeat;
+          background-position: 50%;
+      }
+
+      .gutter.gutter-horizontal {
+          background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAeCAYAAADkftS9AAAAIklEQVQoU2M4c+bMfxAGAgYYmwGrIIiDjrELjpo5aiZeMwF+yNnOs5KSvgAAAABJRU5ErkJggg==');
+          cursor: col-resize;
+      }
 
 
-        #editor {
-            height: 100%;
-        }
+      #editor {
+          height: 100%;
+      }
 
-        .cm-editor {
-            height: 100%;
-            width: 100%;
-            outline: none !important;
-            font-size: 18px;
-            line-height: 30px;
-        }
+      .cm-editor {
+          height: 100%;
+          width: 100%;
+          outline: none !important;
+          font-size: 18px;
+          line-height: 30px;
+      }
 
-        .btn {
-            position: absolute;
-            top: 5px;
-            right: 5px;
-            opacity: 0.2;
-        }
+      .btn {
+          position: absolute;
+          top: 5px;
+          right: 20px;
+          opacity: 0.2;
+      }
 
-        .btn:hover {
-            opacity: 1;
-        }
+      .btn:hover {
+          opacity: 1;
+      }
 
-        .btn button {
-            display: inline-flex;
-            align-items: center;
-        }
+      .btn button {
+          display: inline-flex;
+          align-items: center;
+      }
 
-        .syntaxs {
-            padding: 2em 5em;
-            margin: 0;
-        }
+      .syntaxs {
+          padding: 2em 5em;
+          margin: 0;
+      }
 
-        .syntax-item {
-            list-style: none;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px dotted #eee;
-            padding: 0.2em 0;
-        }
+      .syntax-item {
+          list-style: none;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          border-bottom: 1px dotted #eee;
+          padding: 0.2em 0;
+      }
 
-        .syntax-item .en {
-            color: #666;
-        }
+      .syntax-item .en {
+          color: #666;
+      }
 
-        .github {
-            position: fixed;
-            bottom: 10px;
-            right: 10px;
-            font-size: 12px;
-            color: #666666;
-        }
-    </style>
+      .github {
+          position: fixed;
+          bottom: 10px;
+          right: 25px;
+          font-size: 12px;
+          color: #666666;
+      }
+  </style>
 
-    <!-- Google Tag Manager -->
-    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-        new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-      j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-      'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-    })(window,document,'script','dataLayer','GTM-K9X9PZTW');</script>
-    <!-- End Google Tag Manager -->
+  <!-- Google Tag Manager -->
+  <script>(function (w, d, s, l, i) {
+      w[l] = w[l] || [];
+      w[l].push({
+          'gtm.start':
+              new Date().getTime(), event: 'gtm.js'
+      });
+      var f = d.getElementsByTagName(s)[0],
+          j = d.createElement(s), dl = l != 'dataLayer' ? '&l=' + l : '';
+      j.async = true;
+      j.src =
+          'https://www.googletagmanager.com/gtm.js?id=' + i + dl;
+      f.parentNode.insertBefore(j, f);
+  })(window, document, 'script', 'dataLayer', 'GTM-K9X9PZTW');</script>
+  <!-- End Google Tag Manager -->
 </head>
 <body>
 
 <!-- Google Tag Manager (noscript) -->
-<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-K9X9PZTW"
-                  height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<noscript>
+  <iframe src="https://www.googletagmanager.com/ns.html?id=GTM-K9X9PZTW"
+          height="0" width="0" style="display:none;visibility:hidden"></iframe>
+</noscript>
 <!-- End Google Tag Manager (noscript) -->
 
 <div class="split">
-    <div id="split-0">
-        <div id="editor"></div>
-        <div class="btn">
-            <button onclick="wrapCode()">
-                <svg width="18" height="18" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"
-                     fill="none">
-                    <path stroke="#000000" stroke-linecap="round" stroke-linejoin="round"
-                          stroke-width="2"
-                          d="M5 7h14M5 12h11c1 0 3 .5 3 2.5S17.333 17 16.5 17H12m-7 0h4m3 0 2-2m-2 2 2 2"/>
-                </svg>
-            </button>
-            <button onclick="formatCode()">
-                <svg width="18" height="18" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path fill="none" stroke="#000000" stroke-linecap="round"
-                          stroke-linejoin="round" stroke-width="1.5"
-                          d="M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3l-4.5 16.5"></path>
-                </svg>
-            </button>
-        </div>
+  <div id="split-0">
+    <div id="editor"></div>
+    <div class="btn">
+      <button onclick="wrapCode()">
+        <svg width="18" height="18" viewBox="0 0 24 24"
+             xmlns="http://www.w3.org/2000/svg"
+             fill="none">
+          <path stroke="#000000" stroke-linecap="round" stroke-linejoin="round"
+                stroke-width="2"
+                d="M5 7h14M5 12h11c1 0 3 .5 3 2.5S17.333 17 16.5 17H12m-7 0h4m3 0 2-2m-2 2 2 2"/>
+        </svg>
+      </button>
+      <button onclick="formatCode()">
+        <svg width="18" height="18" viewBox="0 0 24 24"
+             xmlns="http://www.w3.org/2000/svg">
+          <path fill="none" stroke="#000000" stroke-linecap="round"
+                stroke-linejoin="round" stroke-width="1.5"
+                d="M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3l-4.5 16.5"></path>
+        </svg>
+      </button>
     </div>
-    <div id="split-1"></div>
+  </div>
+  <div id="split-1"></div>
 
-    <a class="github" href="https://github.com/keelii/js-syntax">Github</a>
+  <a class="github" href="https://github.com/keelii/js-syntax">Github</a>
 </div>
 
 <script>
-  Split(['#split-0', '#split-1'])
+    Split(['#split-0', '#split-1'])
 
-  function wrapCode() {
-    window.editorView.toggleWrap()
-  }
+    function wrapCode() {
+        window.editorView.toggleWrap()
+    }
 
-  function formatCode() {
-    var content = window.editorView.getContent()
-    var results = beautifier.js(content)
-    window.editorView.setContent(results)
-  }
+    function formatCode() {
+        var content = window.editorView.getContent()
+        var results = beautifier.js(content)
+        window.editorView.setContent(results)
+    }
 
-  function makeSelection(query) {
-    window.editorView.setSelection(query)
-  }
+    function makeSelection(query) {
+        window.editorView.setSelection(query)
+    }
 </script>
 <script src="./index.min.js"></script>
 
 <script>
-  function detectSyntax() {
-    var ret = window.editorView.detectSyntax()
+    function detectSyntax() {
+        var ret = window.editorView.detectSyntax()
 
-    if (Object.keys(ret).length > 0) {
-      var html = ''
-      for (var key in ret) {
-        var clickFn = `makeSelection(${JSON.stringify(ret[key].query.map(function(q) { return [q.start, q.end] } ))})`
-        html += `
+        if (Object.keys(ret).length > 0) {
+            var html = ''
+
+            for (var key in ret) {
+                var clickFn = `makeSelection(${JSON.stringify(ret[key].query.map(function (q) {
+                    return [q.start, q.end]
+                }))})`
+                html += `
         <li class="syntax-item">
             <span>
                 <a onclick="${clickFn}" href="javascript:;">☉</a>
@@ -175,15 +195,15 @@
             </span>
             <span class="en">${key} (${ret[key].query.length})</span>
         </li>`
-      }
-      if (html) {
-        document.querySelector('#split-1').innerHTML = `<ul class="syntaxs">${html}</ul>`;
-      }
+            }
+            if (html) {
+                document.querySelector('#split-1').innerHTML = `<ul class="syntaxs">${html}</ul>`;
+            }
+        }
     }
-  }
 
-  addEventListener('DOMContentLoaded', detectSyntax)
-  addEventListener('contentChange', detectSyntax)
+    addEventListener('DOMContentLoaded', detectSyntax)
+    addEventListener('contentChange', detectSyntax)
 </script>
 
 </body>

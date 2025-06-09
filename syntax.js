@@ -1,6 +1,10 @@
 import esquery from 'esquery';
 
 var JsSyntaxEnum = {
+  Hashbang: {
+    selector: '',
+    name: "Hashbang 注释"
+  },
   // ES6
   LetConst: {
     selector: 'VariableDeclaration[kind=let],VariableDeclaration[kind=const]',
@@ -33,6 +37,18 @@ var JsSyntaxEnum = {
   SpreadSyntax: {
     selector: 'SpreadElement',
     name: '展开语法'
+  },
+  BigInt: {
+    selector: 'Literal[bigint]',
+    name: '大整数'
+  },
+  RegExpMatchIndices: {
+    selector: 'Literal[regex.flags="d"]',
+    name: '正则表达式匹配索引\\d'
+  },
+  NumericSeparators: {
+    selector: 'Literal[raw=/_/]',
+    name: '数字分割符'
   },
   Class: {
     selector: 'ClassDeclaration',
@@ -87,10 +103,6 @@ var JsSyntaxEnum = {
   LogicalOrAssignment: {
     selector: 'AssignmentExpression[operator=\'??=\'],AssignmentExpression[operator=\'||=\']',
     name: '逻辑或赋值运算符'
-  },
-  NumberSeparator: {
-    selector: 'Literal[raw=/^\\d_\\d$/]',
-    name: '数字分隔符'
   },
   // ES13
   TopLevelAwait: {

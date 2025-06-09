@@ -8,7 +8,8 @@ import { JsSyntaxEnum } from './syntax.js';
 
 var compartment = new Compartment();
 
-var doc = `// This is a sample JavaScript code
+var doc = `#!/usr/bin/env node
+// This is a sample JavaScript code
 let _a = 0;
 const _b = 0;
 var a = \`\`;
@@ -31,6 +32,8 @@ async function test() {}
 })();
 for await (var a of b) {}
 try {} catch {}
+var a = 1111n;
+var a = /^a/d;
 var a = b?.c
 var a = b ?? ""
 import("abc")
@@ -91,10 +94,25 @@ window.editorView.setContent = function(content) {
 
 window.editorView.parse = function(code) {
   try {
-    return MyParser.parse(code, {
+    var hashBang = null
+    var ret = MyParser.parse(code, {
       ecmaVersion: 'latest',
-      sourceType: 'module'
+      sourceType: 'module',
+      onComment: (a, b, s, e) => {
+        if (s === 0) {
+          hashBang = {
+            syntax: JsSyntaxEnum.Hashbang,
+            query: [{
+              start: s,
+              end: e,
+            }]
+          }
+        }
+      }
     })
+    ret._hashBang = hashBang
+    console.debug(ret)
+    return ret
   } catch (e) {
     console.error(e)
   }
@@ -106,6 +124,11 @@ window.editorView.detectSyntax = function() {
   if (!ast) return;
 
   var result = {};
+
+  if (ast._hashBang) {
+    result.Hashbang = ast._hashBang;
+  }
+
   for (var key in JsSyntaxEnum) {
     try {
       var ret = esquery.match(ast, JsSyntaxEnum[key].__selector)
