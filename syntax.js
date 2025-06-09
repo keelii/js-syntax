@@ -44,7 +44,7 @@ var JsSyntaxEnum = {
   },
   RegExpMatchIndices: {
     selector: 'Literal[regex.flags="d"]',
-    name: '正则表达式匹配索引\\d'
+    name: '正则表达式匹配索引 /d'
   },
   NumericSeparators: {
     selector: 'Literal[raw=/^\\d+_\\d+$/]',
