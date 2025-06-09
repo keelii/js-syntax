@@ -47,7 +47,7 @@ var JsSyntaxEnum = {
     name: '正则表达式匹配索引\\d'
   },
   NumericSeparators: {
-    selector: 'Literal[raw=/_/]',
+    selector: 'Literal[raw=/^\\d+_\\d+$/]',
     name: '数字分割符'
   },
   Class: {

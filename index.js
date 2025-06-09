@@ -132,6 +132,7 @@ window.editorView.detectSyntax = function () {
     for (var key in JsSyntaxEnum) {
         try {
             var ret = esquery.match(ast, JsSyntaxEnum[key].__selector)
+            // console.debug(key, ret, JsSyntaxEnum[key].__selector)
             if (ret && ret.length > 0) {
                 result[key] = {
                     query: ret,
@@ -144,13 +145,24 @@ window.editorView.detectSyntax = function () {
     }
     return result;
 }
-window.editorView.setSelection = function (locs) {
+function scrollToPos(start) {
+    var pos = window.editorView.state.doc.lineAt(start).from;
     window.editorView.dispatch({
-        selection: EditorSelection.create([
-            ...locs.map(loc => EditorSelection.range(loc[0], loc[1])),
-            EditorSelection.cursor(0)
-        ], 1)
+        effects: EditorView.scrollIntoView(pos, {
+            y: "center",
+            x: "start",
+        }),
+    });
+}
+window.editorView.setSelection = function (locs) {
+    var selection = EditorSelection.create([
+        ...locs.map(loc => EditorSelection.range(loc[0], loc[1])),
+        EditorSelection.cursor(0)
+    ], 1)
+    window.editorView.dispatch({
+        selection,
     })
+    scrollToPos(locs[0][0])
 }
 
 function detectSyntax() {
