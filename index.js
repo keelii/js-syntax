@@ -112,7 +112,7 @@ window.editorView.parse = function (code) {
         console.debug(ret)
         return ret
     } catch (e) {
-        console.error(e)
+        toastMessage(e)
     }
 }
 window.editorView.detectSyntax = function () {
@@ -143,10 +143,23 @@ window.editorView.detectSyntax = function () {
                 };
             }
         } catch (e) {
-            console.error(e);
+            toastMessage(e)
         }
     }
     return result;
+}
+function toastMessage(e) {
+    console.error(e);
+    if (window.Toastify) {
+        var toast = Toastify({
+            text: e,
+            duration: 3000,
+            position: "center",
+            onClick: function() {
+                toast.hideToast();
+            }
+        }).showToast();
+    }
 }
 function scrollToPos(start) {
     var pos = window.editorView.state.doc.lineAt(start).from;
@@ -196,34 +209,37 @@ window.editorView.setSelection = function (ret, key, shiftKey) {
     activeEl.innerText = ret[key].active;
 }
 
+function locateSyntaxKey(e) {
+    if (e.target.classList.contains("locater")) {
+        var key = e.target.getAttribute("data-key");
+        window.editorView.setSelection(ret, key, e.shiftKey);
+    }
+}
 function detectSyntax() {
     var ret = window.editorView.detectSyntax()
     var tar = document.querySelector('#split-1')
 
-    if (Object.keys(ret).length > 0) {
-        tar.addEventListener("click", function (e) {
-            if (e.target.classList.contains("locater")) {
-                var key = e.target.getAttribute("data-key");
-                window.editorView.setSelection(ret, key, e.shiftKey);
-            }
-        })
-        var html = ''
+    if (Object.keys(ret).length < 1) {
+        tar.innerHTML = ""
+        return false
+    }
 
-        for (var key in ret) {
-            html += `
-            <li class="syntax-item">
-                <span>
-                    <a class="locater" data-key="${key}" href="javascript:;">☉</a>
-                    <strong>${ret[key].syntax.name}</strong>
-                </span>
-                <span class="en">${key} (<span id="active-${key}">${ret[key].active}</span>/${ret[key].query.length})</span>
-            </li>`
-        }
-        if (html) {
-            tar.innerHTML = `<ul class="syntaxs">${html}</ul>`;
-        } else {
-            tar.innerHTML = ""
-        }
+    tar.removeEventListener("click", locateSyntaxKey)
+    tar.addEventListener("click", locateSyntaxKey)
+    var html = ''
+
+    for (var key in ret) {
+        html += `
+        <li class="syntax-item">
+            <span>
+                <a class="locater" data-key="${key}" href="javascript:;">☉</a>
+                <strong>${ret[key].syntax.name}</strong>
+            </span>
+            <span class="en">${key} (<span id="active-${key}">${ret[key].active}</span>/${ret[key].query.length})</span>
+        </li>`
+    }
+    if (html) {
+        tar.innerHTML = `<ul class="syntaxs">${html}</ul>`;
     } else {
         tar.innerHTML = ""
     }
