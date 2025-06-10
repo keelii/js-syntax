@@ -98,10 +98,12 @@ window.editorView.parse = function (code) {
             ecmaVersion: 'latest',
             sourceType: 'module',
             onComment: (a, b, s, e) => {
-                if (s === 0) {
-                    hashBang = {
-                        start: s,
-                        end: e,
+                if (s === 0 && code.indexOf('#!') === 0) {
+                    if (/\/(?:[\w-]+\/)*[\w-]+(?:\s+.*)?/.test(b)) {
+                        hashBang = {
+                            start: s,
+                            end: e,
+                        }
                     }
                 }
             }
