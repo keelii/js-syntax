@@ -209,7 +209,7 @@ window.editorView.setSelection = function (ret, key, shiftKey) {
     activeEl.innerText = ret[key].active;
 }
 
-function locateSyntaxKey(e) {
+function locateSyntaxKey(e, ret) {
     if (e.target.classList.contains("locater")) {
         var key = e.target.getAttribute("data-key");
         window.editorView.setSelection(ret, key, e.shiftKey);
@@ -218,14 +218,18 @@ function locateSyntaxKey(e) {
 function detectSyntax() {
     var ret = window.editorView.detectSyntax()
     var tar = document.querySelector('#split-1')
+    var handleClick = function(e) {
+        locateSyntaxKey(e, ret)
+    }
 
     if (Object.keys(ret).length < 1) {
         tar.innerHTML = ""
         return false
     }
 
-    tar.removeEventListener("click", locateSyntaxKey)
-    tar.addEventListener("click", locateSyntaxKey)
+    tar.removeEventListener("click", handleClick)
+    tar.addEventListener("click", handleClick)
+
     var html = ''
 
     for (var key in ret) {
