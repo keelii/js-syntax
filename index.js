@@ -13,6 +13,7 @@ var doc = `#!/usr/bin/env node
 let _a = 0;
 const _b = 0;
 var a = \`\`;
+var a = tagged\`\`;
 var [a, b] = [1, 2];
 var {x, y} = {x: 1, y: 2};
 var f = () => {};
@@ -34,6 +35,10 @@ for await (var a of b) {}
 try {} catch {}
 var a = 1111n;
 var a = /^a/d;
+var a = /^a/s;
+var a = /^a/u;
+var a = /^a/v;
+var a = /^a/y;
 var a = b?.c
 var a = b ?? ""
 import("abc")
@@ -239,7 +244,7 @@ function detectSyntax() {
                 <a class="locater" data-key="${key}" href="javascript:;">☉</a>
                 <strong>${ret[key].syntax.name}</strong>
             </span>
-            <span class="en">${key} (<span id="active-${key}">${ret[key].active}</span>/${ret[key].query.length})</span>
+            <span class="en"><a href="${ret[key].syntax.ref}" target="_blank">${key}</a> (<span id="active-${key}">${ret[key].active}</span>/${ret[key].query.length})</span>
         </li>`
     }
     if (html) {

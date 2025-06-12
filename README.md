@@ -1,6 +1,26 @@
 # JavaScript syntax detector
 
-JavaScript newer syntax(ES6+) detection and code formatting tool.
+A JavaScript newer syntax(ES6+) detector, 
+Only focused on **lexical** syntax, not APIs. 
+Because new lexical syntax will cause SyntaxError, 
+it breaks your code, and cannot caught.
+while the APIs may not, it can be polyfilled or caught.
+
+**YES:**
+
+* new token(=?)
+* new keywords(yield, await)
+* new operators(**)
+* new literals(template literals)
+* ...
+
+**NO:**
+
+* Promise
+* globalThis
+* Array.prototype.API
+* Map/Set/WeakMap/WeakSet
+* ...
 
 ## screenshots
 
