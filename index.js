@@ -27,6 +27,9 @@ import __a from "a";
 export {__a}
 function *l() {}
 var a = 1 ** 2
+var a = {}
+var b = {...a}
+var c = {...b}
 async function test() {}
 (async function() {
     await test()
@@ -74,6 +77,9 @@ window.editorView.toggleWrap = function () {
             wrapping ? EditorView.lineWrapping : []
         )]
     });
+}
+window.editorView.getSize = function () {
+    return window.editorView.state.doc.length
 }
 window.editorView.getContent = function (content) {
     return window.editorView.state.doc.toString()
@@ -156,14 +162,14 @@ window.editorView.detectSyntax = function () {
 function toastMessage(e) {
     console.error(e);
     if (window.Toastify) {
-        var toast = Toastify({
-            text: e,
-            duration: 3000,
-            position: "center",
-            onClick: function() {
-                toast.hideToast();
-            }
-        }).showToast();
+            var toast = Toastify({
+                text: e,
+                duration: 3000,
+                position: "center",
+                onClick: function() {
+                    toast.hideToast();
+                }
+            }).showToast();
     }
 }
 function scrollToPos(start) {
@@ -283,12 +289,14 @@ function DOMContentLoaded() {
         } else {
             detectSyntax()
         }
-
     } else {
         detectSyntax()
     }
 }
 function EditorContentChange() {
+    // if (window.editorView.getSize() / 1024 / 1024 > 1) {
+    //     toastMessage("Content is larger than 1MB, Operation maybe slow!");
+    // }
     detectSyntax()
 }
 window.addEventListener('DOMContentLoaded', DOMContentLoaded)
