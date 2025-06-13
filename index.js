@@ -52,10 +52,10 @@ class B {
 }
 `
 
-var contentChange = new CustomEvent('contentChange', {});
+var customEvent = new CustomEvent('EditorContentChange', {});
 var updateListenerExtension = EditorView.updateListener.of(function (update) {
     if (update.docChanged) {
-        window.dispatchEvent(contentChange)
+        window.dispatchEvent(customEvent)
     }
 });
 
@@ -253,6 +253,43 @@ function detectSyntax() {
         tar.innerHTML = ""
     }
 }
+function isValidUrl(url) {
+    try {
+        new URL(url);
+        return true;
+    } catch (e) {
+        return false;
+    }
+}
+function DOMContentLoaded() {
+    if (typeof URLSearchParams !== 'undefined') {
+        var queryUrl = new URLSearchParams(location.search).get("url")
 
-window.addEventListener('DOMContentLoaded', detectSyntax)
-window.addEventListener('contentChange', detectSyntax)
+        if (queryUrl) {
+            if (!isValidUrl(queryUrl)) {
+                toastMessage("Invalid URL provided in query string=" + queryUrl);
+            } else {
+                fetch(queryUrl)
+                    .then(response => response.text())
+                    .then(text => {
+                        window.editorView.setContent(text);
+                        detectSyntax()
+                    })
+                    .catch(error => {
+                        console.error('Error fetching the URL:', error);
+                        toastMessage(error);
+                    });
+            }
+        } else {
+            detectSyntax()
+        }
+
+    } else {
+        detectSyntax()
+    }
+}
+function EditorContentChange() {
+    detectSyntax()
+}
+window.addEventListener('DOMContentLoaded', DOMContentLoaded)
+window.addEventListener('EditorContentChange', EditorContentChange)

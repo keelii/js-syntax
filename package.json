@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "build": "./node_modules/.bin/esbuild index.js --bundle --minify --outfile=index.min.js --watch",
+    "build": "./node_modules/.bin/esbuild index.js --bundle --outfile=index.min.js --watch",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
