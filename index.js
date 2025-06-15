@@ -303,21 +303,26 @@ function EditorContentChange() {
 function OrientationChange() {
   window.editorView.destroy()
   window.splitter.destroy()
+  window.addOrientationClass()
+  initSplitter()
   init()
 }
 
 function init() {
-  window.splitter = Split(['#split-0', '#split-1'], {
-    direction: window.orientation !== 0 ? 'horizontal' : 'vertical'
-  })
-
-  window.editorView = new EditorView({
-    doc,
-    extensions: [updateListenerExtension, basicSetup, compartment.of([]), javascript()],
-    parent: document.getElementById('editor')
-  })
+  try {
+    window.editorView = new EditorView({
+      doc,
+      extensions: [updateListenerExtension, basicSetup, compartment.of([]), javascript()],
+      parent: document.getElementById('editor')
+    })
+  } catch (e) {
+    toastMessage("Error initializing splitter/editor: " + e);
+  }
 }
 
-window.addEventListener('DOMContentLoaded', DOMContentLoaded)
-window.addEventListener('EditorContentChange', EditorContentChange)
-window.addEventListener('orientationchange', OrientationChange);
+(function () {
+  DOMContentLoaded()
+  // window.addEventListener('DOMContentLoaded', DOMContentLoaded)
+  window.addEventListener('EditorContentChange', EditorContentChange)
+  window.addEventListener('orientationchange', OrientationChange);
+})();

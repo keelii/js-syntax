@@ -111,6 +111,9 @@
           text-decoration: none;
       }
 
+      .split {
+          overflow: hidden;
+      }
       #split-0, #split-1 {
           position: relative;
       }
@@ -123,8 +126,12 @@
           display: flex;
           flex-direction: row;
       }
-      .split-v {
+      .split[orientation="0"] {
           flex-direction: column;
+      }
+      [orientation="0"] .syntaxs,
+      [orientation="90"] .syntaxs {
+          padding: 1em;
       }
 
       .gutter {
@@ -141,7 +148,6 @@
           background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAFAQMAAABo7865AAAABlBMVEVHcEzMzMzyAv2sAAAAAXRSTlMAQObYZgAAABBJREFUeF5jOAMEEAIEEFwAn3kMwcB6I2AAAAAASUVORK5CYII=');
           cursor: row-resize;
       }
-
 
       #editor {
           height: 100%;
@@ -171,11 +177,8 @@
           align-items: center;
       }
 
-      .split-v .syntaxs {
-          padding: 2em 1em;
-      }
       .syntaxs {
-          padding: 2em 5em;
+          padding: 2em 4em;
           margin: 0;
       }
 
@@ -232,9 +235,11 @@
 
 <div class="split">
     <script>
-      (function() {
-        document.querySelector('.split').classList.add("split-" + (window.orientation === 0 ? 'v': "h"))
-      })();
+      window.addOrientationClass = function() {
+        document.querySelector('.split')
+            .setAttribute("orientation", window.orientation)
+      }
+      addOrientationClass();
     </script>
   <div id="split-0">
     <div id="editor"></div>
@@ -486,8 +491,18 @@
           </li>
       </ul>
   </div>
-  <script>
-  </script>
+    <script>
+      function initSplitter() {
+        try {
+          window.splitter = Split(['#split-0', '#split-1'], {
+            direction: window.orientation !== 0 ? 'horizontal' : 'vertical'
+          })
+        } catch (e) {
+          console.error('Split.js failed to initialize:', e);
+        }
+      }
+      initSplitter()
+    </script>
 
   <a class="github" href="https://github.com/keelii/js-syntax">Github</a>
 </div>
