@@ -1,9 +1,9 @@
-import {basicSetup, EditorView} from 'codemirror'
-import {javascript} from '@codemirror/lang-javascript'
-import {Compartment, EditorSelection} from '@codemirror/state'
+import { basicSetup, EditorView } from 'codemirror'
+import { javascript } from '@codemirror/lang-javascript'
+import { Compartment, EditorSelection } from '@codemirror/state'
 import esquery from 'esquery'
-import {MyParser} from './parser.js';
-import {JsSyntaxEnum} from './syntax.js';
+import { MyParser } from './parser.js';
+import { JsSyntaxEnum } from './syntax.js';
 
 
 var compartment = new Compartment();
@@ -57,194 +57,180 @@ class B {
 
 var customEvent = new CustomEvent('EditorContentChange', {});
 var updateListenerExtension = EditorView.updateListener.of(function (update) {
-    if (update.docChanged) {
-        window.dispatchEvent(customEvent)
-    }
+  if (update.docChanged) {
+    window.dispatchEvent(customEvent)
+  }
 });
-
-window.editorView = new EditorView({
-    doc,
-    extensions: [updateListenerExtension, basicSetup, compartment.of([]), javascript()],
-    parent: document.getElementById('editor')
-})
-
 var wrapping = false;
 
-window.editorView.toggleWrap = function () {
-    wrapping = !wrapping;
-    window.editorView.dispatch({
-        effects: [compartment.reconfigure(
-            wrapping ? EditorView.lineWrapping : []
-        )]
-    });
+window.jss = {}
+window.jss.formatCode = function() {
+  var content = getContent()
+  var results = beautifier.js(content)
+  setContent(results)
 }
-window.editorView.getSize = function () {
-    return window.editorView.state.doc.length
+window.jss.toggleWrap = function () {
+  wrapping = !wrapping;
+  window.editorView.dispatch({
+    effects: [compartment.reconfigure(
+      wrapping ? EditorView.lineWrapping : []
+    )]
+  });
 }
-window.editorView.getContent = function (content) {
-    return window.editorView.state.doc.toString()
+
+function getSize() {
+  return window.editorView.state.doc.length
 }
-window.editorView.setContent = function (content) {
-    window.editorView.dispatch({
-        selection: {
-            anchor: 1,
-            head: 1
-        },
-        changes: {
-            from: 0,
-            to: window.editorView.state.doc.length,
-            insert: content
-        }
-    })
-    window.editorView.scrollDOM.scrollTo({
-        top: 0,
-        left: 0
-    })
+function getContent(content) {
+  return window.editorView.state.doc.toString()
+}
+function setContent(content) {
+  window.editorView.dispatch({
+    selection: {
+      anchor: 1,
+      head: 1
+    },
+    changes: {
+      from: 0,
+      to: window.editorView.state.doc.length,
+      insert: content
+    }
+  })
+  window.editorView.scrollDOM.scrollTo({
+    top: 0,
+    left: 0
+  })
 };
-
-window.editorView.parse = function (code) {
-    try {
-        var hashBang = null
-        var ret = MyParser.parse(code, {
-            ecmaVersion: 'latest',
-            sourceType: 'module',
-            onComment: (a, b, s, e) => {
-                if (s === 0 && code.indexOf('#!') === 0) {
-                    if (/\/(?:[\w-]+\/)*[\w-]+(?:\s+.*)?/.test(b)) {
-                        hashBang = {
-                            start: s,
-                            end: e,
-                        }
-                    }
-                }
+function parseCode(code) {
+  try {
+    var hashBang = null
+    var ret = MyParser.parse(code, {
+      ecmaVersion: 'latest',
+      sourceType: 'module',
+      onComment: (a, b, s, e) => {
+        if (s === 0 && code.indexOf('#!') === 0) {
+          if (/\/(?:[\w-]+\/)*[\w-]+(?:\s+.*)?/.test(b)) {
+            hashBang = {
+              start: s,
+              end: e
             }
-        })
-        ret._hashBang = hashBang
-        console.debug(ret)
-        return ret
-    } catch (e) {
-        toastMessage(e)
-    }
-}
-window.editorView.detectSyntax = function () {
-    var code = window.editorView.getContent();
-    var ast = window.editorView.parse(code);
-
-    if (!ast) return;
-
-    var result = {};
-
-    if (ast._hashBang) {
-        result.Hashbang = {
-            active: 0,
-            syntax: JsSyntaxEnum.Hashbang,
-            query: [ast._hashBang]
-        };
-    }
-
-    for (var key in JsSyntaxEnum) {
-        try {
-            var ret = esquery.match(ast, JsSyntaxEnum[key].__selector)
-            // console.debug(key, ret, JsSyntaxEnum[key].__selector)
-            if (ret && ret.length > 0) {
-                result[key] = {
-                    active: 0,
-                    query: ret,
-                    syntax: JsSyntaxEnum[key]
-                };
-            }
-        } catch (e) {
-            toastMessage(e)
+          }
         }
-    }
-    return result;
+      }
+    })
+    ret._hashBang = hashBang
+    console.debug(ret)
+    return ret
+  } catch (e) {
+    toastMessage(e)
+  }
 }
-function toastMessage(e) {
-    console.error(e);
-    if (window.Toastify) {
-            var toast = Toastify({
-                text: e,
-                duration: 3000,
-                position: "center",
-                onClick: function() {
-                    toast.hideToast();
-                }
-            }).showToast();
+function matchSelector() {
+  var code = getContent();
+  var ast = parseCode(code);
+
+  if (!ast) return;
+
+  var result = {};
+
+  if (ast._hashBang) {
+    result.Hashbang = {
+      active: 0,
+      syntax: JsSyntaxEnum.Hashbang,
+      query: [ast._hashBang]
+    };
+  }
+
+  for (var key in JsSyntaxEnum) {
+    try {
+      var ret = esquery.match(ast, JsSyntaxEnum[key].__selector)
+      // console.debug(key, ret, JsSyntaxEnum[key].__selector)
+      if (ret && ret.length > 0) {
+        result[key] = {
+          active: 0,
+          query: ret,
+          syntax: JsSyntaxEnum[key]
+        };
+      }
+    } catch (e) {
+      toastMessage(e)
     }
+  }
+  return result;
 }
 function scrollToPos(start) {
-    var pos = window.editorView.state.doc.lineAt(start).from;
-    window.editorView.dispatch({
-        effects: EditorView.scrollIntoView(pos, {
-            y: "center",
-            x: "nearest",
-        }),
-    });
+  var pos = window.editorView.state.doc.lineAt(start).from;
+  window.editorView.dispatch({
+    effects: EditorView.scrollIntoView(pos, {
+      y: 'center',
+      x: 'nearest'
+    })
+  });
 }
-window.editorView.setSelection = function (ret, key, shiftKey) {
-    if (shiftKey && ret[key].active === 0) {
-        ret[key].active = ret[key].query.length + 1
+function setSelection(ret, key, shiftKey) {
+  if (shiftKey && ret[key].active === 0) {
+    ret[key].active = ret[key].query.length + 1
+  }
+
+  if (shiftKey) {
+    ret[key].active--
+  } else {
+    ret[key].active++
+  }
+
+  var active = ret[key].active - 1
+  var query = ret[key].query[active]
+  var activeEl = document.querySelector(`#active-${key}`);
+
+  if (active < 0 || active >= ret[key].query.length) {
+    // console.warn(`No more ${key} syntax found!`, active, ret[key].query.length)
+    window.editorView.dispatch({
+      selection: {anchor: window.editorView.state.selection.main.from}
+    });
+    activeEl.innerText = 0
+
+    if (!shiftKey && ret[key].active >= ret[key].query.length) {
+      ret[key].active = 0
     }
 
-    if (shiftKey) {
-        ret[key].active--
-    } else {
-        ret[key].active++
-    }
+    return;
+  }
 
-    var active = ret[key].active - 1
-    var query = ret[key].query[active]
-    var activeEl = document.querySelector(`#active-${key}`);
+  var selection = EditorSelection.create([
+    EditorSelection.range(query.start, query.end),
+    EditorSelection.cursor(0)
+  ], 1)
+  window.editorView.dispatch({selection})
+  scrollToPos(query.start)
 
-    if (active < 0 || active >= ret[key].query.length) {
-        // console.warn(`No more ${key} syntax found!`, active, ret[key].query.length)
-        window.editorView.dispatch({
-            selection: { anchor: window.editorView.state.selection.main.from },
-        });
-        activeEl.innerText = 0
-
-        if (!shiftKey && ret[key].active >= ret[key].query.length) {
-            ret[key].active = 0
-        }
-
-        return;
-    }
-
-    var selection = EditorSelection.create([
-        EditorSelection.range(query.start, query.end),
-        EditorSelection.cursor(0)
-    ], 1)
-    window.editorView.dispatch({ selection })
-    scrollToPos(query.start)
-
-    activeEl.innerText = ret[key].active;
+  activeEl.innerText = ret[key].active;
 }
 
 function locateSyntaxKey(e, ret) {
-    if (e.target.classList.contains("locater")) {
-        var key = e.target.getAttribute("data-key");
-        window.editorView.setSelection(ret, key, e.shiftKey);
-    }
+  if (e.target.classList.contains('locater')) {
+    var key = e.target.getAttribute('data-key');
+    setSelection(ret, key, e.shiftKey);
+  }
 }
 function detectSyntax() {
-    var ret = window.editorView.detectSyntax()
-    var tar = document.querySelector('#split-1')
-    var handleClick = function(e) {
-        locateSyntaxKey(e, ret)
-    }
+  var ret = matchSelector()
+  var tar = document.querySelector('#split-1')
+  var handleClick = function (e) {
+    locateSyntaxKey(e, ret)
+  }
 
-    if (Object.keys(ret).length < 1) {
-        tar.innerHTML = ""
-        return false
-    }
+  if (Object.keys(ret).length < 1) {
+    tar.innerHTML = ''
+    return false
+  }
 
-    tar.removeEventListener("click", handleClick)
-    tar.addEventListener("click", handleClick)
+  tar.removeEventListener('click', handleClick)
+  tar.addEventListener('click', handleClick)
 
-    var html = ''
+  var html = ''
 
-    for (var key in ret) {
-        html += `
+  for (var key in ret) {
+    html += `
         <li class="syntax-item">
             <span>
                 <a class="locater" data-key="${key}" href="javascript:;">☉</a>
@@ -252,52 +238,86 @@ function detectSyntax() {
             </span>
             <span class="en"><a href="${ret[key].syntax.ref}" target="_blank">${key}</a> (<span id="active-${key}">${ret[key].active}</span>/${ret[key].query.length})</span>
         </li>`
-    }
-    if (html) {
-        tar.innerHTML = `<ul class="syntaxs">${html}</ul>`;
-    } else {
-        tar.innerHTML = ""
-    }
+  }
+  if (html) {
+    tar.innerHTML = `<ul class="syntaxs">${html}</ul>`;
+  } else {
+    tar.innerHTML = ''
+  }
+}
+
+function toastMessage(e) {
+  console.error(e);
+  if (window.Toastify) {
+    var toast = Toastify({
+      text: e,
+      duration: 3000,
+      position: 'center',
+      onClick: function () {
+        toast.hideToast();
+      }
+    }).showToast();
+  }
 }
 function isValidUrl(url) {
-    try {
-        new URL(url);
-        return true;
-    } catch (e) {
-        return false;
-    }
+  try {
+    new URL(url);
+    return true;
+  } catch (e) {
+    return false;
+  }
 }
-function DOMContentLoaded() {
-    if (typeof URLSearchParams !== 'undefined') {
-        var queryUrl = new URLSearchParams(location.search).get("url")
 
-        if (queryUrl) {
-            if (!isValidUrl(queryUrl)) {
-                toastMessage("Invalid URL provided in query string=" + queryUrl);
-            } else {
-                fetch(queryUrl)
-                    .then(response => response.text())
-                    .then(text => {
-                        window.editorView.setContent(text);
-                        detectSyntax()
-                    })
-                    .catch(error => {
-                        console.error('Error fetching the URL:', error);
-                        toastMessage(error);
-                    });
-            }
-        } else {
-            detectSyntax()
-        }
+function DOMContentLoaded() {
+  init()
+
+  if (typeof URLSearchParams !== 'undefined') {
+    var queryUrl = new URLSearchParams(location.search).get('url')
+
+    if (queryUrl) {
+      if (!isValidUrl(queryUrl)) {
+        toastMessage('Invalid URL provided in query string=' + queryUrl);
+      } else {
+        fetch(queryUrl)
+        .then(response => response.text())
+        .then(text => {
+          setContent(text);
+          detectSyntax()
+        })
+        .catch(error => {
+          console.error('Error fetching the URL:', error);
+          toastMessage(error);
+        });
+      }
     } else {
-        detectSyntax()
+      detectSyntax()
     }
-}
-function EditorContentChange() {
-    // if (window.editorView.getSize() / 1024 / 1024 > 1) {
-    //     toastMessage("Content is larger than 1MB, Operation maybe slow!");
-    // }
+  } else {
     detectSyntax()
+  }
 }
+
+function EditorContentChange() {
+  detectSyntax()
+}
+function OrientationChange() {
+  window.editorView.destroy()
+  window.splitter.destroy()
+  init()
+}
+
+function init() {
+  window.splitter = Split(['#split-0', '#split-1'], {
+    direction: window.orientation !== 0 ? 'horizontal' : 'vertical'
+  })
+
+  window.editorView = new EditorView({
+    doc,
+    extensions: [updateListenerExtension, basicSetup, compartment.of([]), javascript()],
+    parent: document.getElementById('editor')
+  })
+}
+
 window.addEventListener('DOMContentLoaded', DOMContentLoaded)
 window.addEventListener('EditorContentChange', EditorContentChange)
+window.addEventListener('orientationchange', OrientationChange);

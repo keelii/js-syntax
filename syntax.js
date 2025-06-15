@@ -59,27 +59,27 @@ var JsSyntaxEnum = {
   },
   RegExpMatchIndices: {
     selector: 'Literal[regex.flags="d"]',
-    name: '正则表达式匹配索引 /d',
+    name: '正则表达式标识 /d',
     ref: "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/RegExp#flags"
   },
   RegExpMatchDotAll: {
     selector: 'Literal[regex.flags="s"]',
-    name: '正则表达式匹配索引 /s',
+    name: '正则表达式标识 /s',
     ref: "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/RegExp#flags"
   },
   RegExpMatchUnicode: {
     selector: 'Literal[regex.flags="u"]',
-    name: '正则表达式匹配索引 /u',
+    name: '正则表达式标识 /u',
     ref: "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/RegExp#flags"
   },
   RegExpMatchUnicodeSets: {
     selector: 'Literal[regex.flags="v"]',
-    name: '正则表达式匹配索引 /v',
+    name: '正则表达式标识 /v',
     ref: "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/RegExp#flags"
   },
   RegExpMatchSticky: {
     selector: 'Literal[regex.flags="y"]',
-    name: '正则表达式匹配索引 /y',
+    name: '正则表达式标识 /y',
     ref: "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/RegExp#flags"
   },
   NumericSeparators: {
