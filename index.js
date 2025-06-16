@@ -119,7 +119,7 @@ function parseCode(code) {
       }
     })
     ret._hashBang = hashBang
-    console.debug(ret)
+    // console.debug(ret)
     return ret
   } catch (e) {
     toastMessage(e)
@@ -184,9 +184,7 @@ function setSelection(ret, key, shiftKey) {
 
   if (active < 0 || active >= ret[key].query.length) {
     // console.warn(`No more ${key} syntax found!`, active, ret[key].query.length)
-    window.editorView.dispatch({
-      selection: {anchor: window.editorView.state.selection.main.from}
-    });
+    clearSelection()
     activeEl.innerText = 0
 
     if (!shiftKey && ret[key].active >= ret[key].query.length) {
@@ -196,14 +194,24 @@ function setSelection(ret, key, shiftKey) {
     return;
   }
 
+  makeSelection(query.start, query.end)
+  activeEl.innerText = ret[key].active;
+}
+function makeSelection(start, end) {
+  if (start === end) {
+    end = start + 1;
+  }
   var selection = EditorSelection.create([
-    EditorSelection.range(query.start, query.end),
+    EditorSelection.range(start, end),
     EditorSelection.cursor(0)
   ], 1)
-  window.editorView.dispatch({selection})
-  scrollToPos(query.start)
-
-  activeEl.innerText = ret[key].active;
+  window.editorView.dispatch({ selection })
+  scrollToPos(start)
+}
+function clearSelection() {
+  window.editorView.dispatch({
+    selection: {anchor: window.editorView.state.selection.main.from}
+  });
 }
 
 function locateSyntaxKey(e, ret) {
@@ -268,31 +276,55 @@ function isValidUrl(url) {
   }
 }
 
-function DOMContentLoaded() {
-  init()
-
+var PARAM_URL = ''
+var PARAM_LOC = []
+function getQueryUrl() {
   if (typeof URLSearchParams !== 'undefined') {
     var queryUrl = new URLSearchParams(location.search).get('url')
 
-    if (queryUrl) {
-      if (!isValidUrl(queryUrl)) {
-        toastMessage('Invalid URL provided in query string=' + queryUrl);
-      } else {
-        fetch(queryUrl)
-        .then(response => response.text())
-        .then(text => {
-          setContent(text);
-          detectSyntax()
-        })
-        .catch(error => {
-          console.error('Error fetching the URL:', error);
-          toastMessage(error);
-        });
-      }
-    } else {
-      detectSyntax()
+    if (queryUrl === null) {
+      return false
     }
+    if (queryUrl === "") {
+      return toastMessage("No URL provided in query string, using default code.");
+    }
+    if (!isValidUrl(queryUrl)) {
+      return toastMessage('Invalid URL provided in query string=' + queryUrl);
+    }
+    return queryUrl
+  }
+}
+function DOMContentLoaded() {
+  init()
+
+  var queryUrl = getQueryUrl()
+  if (queryUrl) {
+    if (/\d+:\d+$/.test(queryUrl)) {
+      var parts = queryUrl.split(':');
+      PARAM_LOC = [Math.max(Number(parts[2]), 1), Math.max(Number(parts[3]), 1)]
+      PARAM_URL = parts[0] + ":" + parts[1];
+    }
+    // console.log(PARAM_URL, PARAM_LOC)
+
+    if (!PARAM_URL) {
+      return toastMessage("URL Not valid, please check the query string.");
+    }
+
+    fetch(PARAM_URL)
+      .then(response => response.text())
+      .then(text => {
+        setContent(text);
+        // window.jss.toggleWrap()
+        var pos = window.editorView.state.doc.line(PARAM_LOC[0]).from + PARAM_LOC[1]
+        makeSelection(pos - 1, pos);
+        detectSyntax()
+      })
+      .catch(error => {
+        console.error('Error fetching the URL:', error);
+        toastMessage(error);
+      });
   } else {
+    setContent(doc)
     detectSyntax()
   }
 }
@@ -311,7 +343,7 @@ function OrientationChange() {
 function init() {
   try {
     window.editorView = new EditorView({
-      doc,
+      doc: "",
       extensions: [updateListenerExtension, basicSetup, compartment.of([]), javascript()],
       parent: document.getElementById('editor')
     })
@@ -321,8 +353,7 @@ function init() {
 }
 
 (function () {
-  DOMContentLoaded()
-  // window.addEventListener('DOMContentLoaded', DOMContentLoaded)
+  window.addEventListener('DOMContentLoaded', DOMContentLoaded)
   window.addEventListener('EditorContentChange', EditorContentChange)
   window.addEventListener('orientationchange', OrientationChange);
 })();
