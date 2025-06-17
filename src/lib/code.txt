@@ -1,0 +1,45 @@
+#!/usr/bin/env node
+// This is a sample JavaScript code
+let _a = 0;
+const _b = 0;
+var a = ``;
+var a = tagged``;
+var [a, b] = [1, 2];
+var {x, y} = {x: 1, y: 2};
+var f = () => {};
+var g = {a}
+for (var a of b) {}
+function i(a = 0) {}
+function j(...a) {}
+var [...a] = []
+class A {}
+import __a from "a";
+export {__a}
+function *l() {}
+var a = 1 ** 2
+var a = {}
+var b = {...a}
+var c = {...b}
+async function test() {}
+(async function() {
+    await test()
+})();
+for await (var a of b) {}
+try {} catch {}
+var a = 1111n;
+var a = /^a/d;
+var a = /^a/s;
+var a = /^a/u;
+var a = /^a/v;
+var a = /^a/y;
+var a = b?.c
+var a = b ?? ""
+import("abc")
+var a = a ??= 2;
+var a = b ||= 2;
+var a = 100_100;
+await test()
+class B {
+    #a = 1;
+    static a = {}
+}

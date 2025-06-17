@@ -1,59 +1,12 @@
 import { basicSetup, EditorView } from 'codemirror'
 import { javascript } from '@codemirror/lang-javascript'
 import { Compartment, EditorSelection } from '@codemirror/state'
-import esquery from 'esquery'
-import { MyParser } from './parser.js';
-import { JsSyntaxEnum } from './syntax.js';
+import { MyParser } from '../lib/parser.js';
+import {detect} from "../lib/detect.js";
+import SimpleCode from "../lib/code.txt";
 
 
 var compartment = new Compartment();
-
-var doc = `#!/usr/bin/env node
-// This is a sample JavaScript code
-let _a = 0;
-const _b = 0;
-var a = \`\`;
-var a = tagged\`\`;
-var [a, b] = [1, 2];
-var {x, y} = {x: 1, y: 2};
-var f = () => {};
-var g = {a}
-for (var a of b) {}
-function i(a = 0) {}
-function j(...a) {}
-var [...a] = []
-class A {}
-import __a from "a";
-export {__a}
-function *l() {}
-var a = 1 ** 2
-var a = {}
-var b = {...a}
-var c = {...b}
-async function test() {}
-(async function() {
-    await test()
-})();
-for await (var a of b) {}
-try {} catch {}
-var a = 1111n;
-var a = /^a/d;
-var a = /^a/s;
-var a = /^a/u;
-var a = /^a/v;
-var a = /^a/y;
-var a = b?.c
-var a = b ?? ""
-import("abc")
-var a = a ??= 2;
-var a = b ||= 2;
-var a = 100_100;
-await test()
-class B {
-    #a = 1;
-    static a = {}
-}
-`
 
 var customEvent = new CustomEvent('EditorContentChange', {});
 var updateListenerExtension = EditorView.updateListener.of(function (update) {
@@ -127,36 +80,7 @@ function parseCode(code) {
 }
 function matchSelector() {
   var code = getContent();
-  var ast = parseCode(code);
-
-  if (!ast) return;
-
-  var result = {};
-
-  if (ast._hashBang) {
-    result.Hashbang = {
-      active: 0,
-      syntax: JsSyntaxEnum.Hashbang,
-      query: [ast._hashBang]
-    };
-  }
-
-  for (var key in JsSyntaxEnum) {
-    try {
-      var ret = esquery.match(ast, JsSyntaxEnum[key].__selector)
-      // console.debug(key, ret, JsSyntaxEnum[key].__selector)
-      if (ret && ret.length > 0) {
-        result[key] = {
-          active: 0,
-          query: ret,
-          syntax: JsSyntaxEnum[key]
-        };
-      }
-    } catch (e) {
-      toastMessage(e)
-    }
-  }
-  return result;
+  return detect(code);
 }
 function scrollToPos(start) {
   var pos = window.editorView.state.doc.lineAt(start).from;
@@ -169,7 +93,7 @@ function scrollToPos(start) {
 }
 function setSelection(ret, key, shiftKey) {
   if (shiftKey && ret[key].active === 0) {
-    ret[key].active = ret[key].query.length + 1
+    ret[key].active = ret[key].locations.length + 1
   }
 
   if (shiftKey) {
@@ -179,22 +103,22 @@ function setSelection(ret, key, shiftKey) {
   }
 
   var active = ret[key].active - 1
-  var query = ret[key].query[active]
+  var location = ret[key].locations[active]
   var activeEl = document.querySelector(`#active-${key}`);
 
-  if (active < 0 || active >= ret[key].query.length) {
-    // console.warn(`No more ${key} syntax found!`, active, ret[key].query.length)
+  if (active < 0 || active >= ret[key].locations.length) {
+    // console.warn(`No more ${key} syntax found!`, active, ret[key].locations.length)
     clearSelection()
     activeEl.innerText = 0
 
-    if (!shiftKey && ret[key].active >= ret[key].query.length) {
+    if (!shiftKey && ret[key].active >= ret[key].locations.length) {
       ret[key].active = 0
     }
 
     return;
   }
 
-  makeSelection(query.start, query.end)
+  makeSelection(location.start.index, location.end.index)
   activeEl.innerText = ret[key].active;
 }
 function makeSelection(start, end) {
@@ -244,7 +168,7 @@ function detectSyntax() {
                 <a class="locater" data-key="${key}" href="javascript:;">☉</a>
                 <strong>${ret[key].syntax.name}</strong>
             </span>
-            <span class="en"><a href="${ret[key].syntax.ref}" target="_blank">${key}</a> (<span id="active-${key}">${ret[key].active}</span>/${ret[key].query.length})</span>
+            <span class="en"><a href="${ret[key].syntax.ref}" target="_blank">${key}</a> (<span id="active-${key}">${ret[key].active}</span>/${ret[key].locations.length})</span>
         </li>`
   }
   if (html) {
@@ -332,7 +256,7 @@ function DOMContentLoaded() {
         toastMessage(error);
       });
   } else {
-    setContent(doc)
+    setContent(SimpleCode)
     detectSyntax()
   }
 }
