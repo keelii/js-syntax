@@ -276,8 +276,6 @@ function isValidUrl(url) {
   }
 }
 
-var PARAM_URL = ''
-var PARAM_LOC = []
 function getQueryUrl() {
   if (typeof URLSearchParams !== 'undefined') {
     var queryUrl = new URLSearchParams(location.search).get('url')
@@ -297,26 +295,36 @@ function getQueryUrl() {
 function DOMContentLoaded() {
   init()
 
+  var PARAM_URL = ''
+  var PARAM_LOC = []
   var queryUrl = getQueryUrl()
-  if (queryUrl) {
-    if (/\d+:\d+$/.test(queryUrl)) {
-      var parts = queryUrl.split(':');
-      PARAM_LOC = [Math.max(Number(parts[2]), 1), Math.max(Number(parts[3]), 1)]
-      PARAM_URL = parts[0] + ":" + parts[1];
-    }
-    // console.log(PARAM_URL, PARAM_LOC)
 
-    if (!PARAM_URL) {
-      return toastMessage("URL Not valid, please check the query string.");
+  if (queryUrl) {
+    var u = new URL(queryUrl)
+    if (u.pathname.indexOf(":") > -1) {
+      if (/\d+:\d+$/.test(queryUrl)) {
+        var parts = queryUrl.split(':');
+        PARAM_LOC = [Math.max(Number(parts[2]), 1), Math.max(Number(parts[3]), 1)]
+        PARAM_URL = parts[0] + ":" + parts[1];
+      }
+
+      if (!PARAM_URL) {
+        return toastMessage("URL Not valid, please check the query string.");
+      }
+    } else {
+      PARAM_URL = queryUrl
     }
+
+    // console.log(PARAM_URL, PARAM_LOC)
 
     fetch(PARAM_URL)
       .then(response => response.text())
       .then(text => {
         setContent(text);
-        // window.jss.toggleWrap()
-        var pos = window.editorView.state.doc.line(PARAM_LOC[0]).from + PARAM_LOC[1]
-        makeSelection(pos - 1, pos);
+        if (PARAM_LOC.length) {
+          var pos = window.editorView.state.doc.line(PARAM_LOC[0]).from + PARAM_LOC[1]
+          makeSelection(pos - 1, pos);
+        }
         detectSyntax()
       })
       .catch(error => {
