@@ -8,6 +8,6 @@ dev-cli:
 run-file:
 	tjs run ./js-syntax.js src/lib/code.txt
 run-url:
-	tjs run ./js-syntax.js https://unpkg.com/vue-router@4.5.1/dist/vue-router.global.js
+	tjs run ./js-syntax.js https://unpkg.com/js-syntax-detector@1.0.0/src/lib/code.txt
 compile:
 	tjs compile js-syntax.js bin/js-syntax

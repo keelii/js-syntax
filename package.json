@@ -1,13 +1,14 @@
 {
-  "name": "js-syntax",
-  "version": "1.0.0",
+  "name": "js-syntax-detector",
+  "version": "1.0.2",
   "main": "src/lib/detect.js",
+  "files": ["bin/js-syntax"],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": ["js", "syntax", "detector"],
   "author": "keelii",
-  "license": "ISC",
+  "license": "MIT",
   "description": "",
   "dependencies": {
     "@codemirror/lang-javascript": "^6.2.4",
