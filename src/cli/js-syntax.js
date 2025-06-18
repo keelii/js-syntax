@@ -1,17 +1,41 @@
 import path from "tjs:path";
+import getopts from "tjs:getopts";
 import {detect} from "../lib/detect.js";
 import {decodeText, isURL} from "./utils.js";
+import packageJson from "../../package.json" with { type: "json" };
 
+var opts = getopts(tjs.args, {
+    alias: {
+        h: "help",
+        v: "version"
+    }
+})
 
-var document = `Usage: js-syntax <file|url>
+var document = `Usage: js-syntax [options] <file|url>
+  -h, --help               Show this help message and exit
+  -v, --version              Show version number and quit
 Example:
   js-syntax https://example.com/script.js
   js-syntax /path/to/local/script.js`;
 
-var args = tjs.args.slice(1);
+if (opts._.includes("tjs") && opts._.includes("run")) {
+    opts._ = opts._.slice(3);
+} else {
+    opts._ = opts._.slice(1);
+}
+
+var args = opts._
+if (opts.h) {
+    console.log(document)
+    tjs.exit(0)
+}
+if (opts.v) {
+    console.log(packageJson.version)
+    tjs.exit(0)
+}
 if (args.length < 1) {
     console.log(document)
-    tjs.exit(1)
+    tjs.exit(0)
 }
 
 var text = ""

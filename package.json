@@ -3,13 +3,10 @@
   "version": "1.0.0",
   "main": "src/lib/detect.js",
   "scripts": {
-    "dev": "./node_modules/.bin/esbuild src/web/index.js --bundle --target=es6 --outfile=index.min.js --watch",
-    "build": "./node_modules/.bin/esbuild src/web/index.js --bundle --minify --target=es6 --outfile=index.min.js",
-    "build:cli": "./node_modules/.bin/esbuild src/cli/js-syntax.js --bundle --minify --target=es2023 --outfile=src/cli/js-syntax.bundle.js --format=esm --platform=neutral --external:tjs:* --main-fields=main,module",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": ["js", "syntax", "detector"],
+  "author": "keelii",
   "license": "ISC",
   "description": "",
   "dependencies": {
@@ -21,6 +18,7 @@
     "esquery": "^1.6.0"
   },
   "devDependencies": {
+    "@txikijs/types": "^24.12.0",
     "esbuild": "^0.25.5"
   }
 }

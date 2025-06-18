@@ -25,3 +25,9 @@ while the APIs may not, it can be polyfilled or caught.
 ## screenshots
 
 ![Image](https://github.com/user-attachments/assets/3c2f4e9d-bbb3-4275-a4a6-f39581600c3e)
+
+## So you want a CLI tool?
+
+```bash
+npm install -g js-syntax
+```
