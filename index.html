@@ -485,7 +485,8 @@
       function initSplitter() {
         try {
           window.splitter = Split(['#split-0', '#split-1'], {
-            direction: window.orientation !== 0 ? 'horizontal' : 'vertical'
+              minSize: 0,
+              direction: window.orientation !== 0 ? 'horizontal' : 'vertical'
           })
         } catch (e) {
           console.error('Split.js failed to initialize:', e);

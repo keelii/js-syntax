@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "homepage": "https://github.com/keelii/js-syntax",
+  "homepage": "https://js-syntax.com/",
+  "repository": "https://github.com/keelii/js-syntax",
   "keywords": ["js", "syntax", "detector"],
   "author": "keelii",
   "license": "MIT",

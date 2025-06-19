@@ -53,7 +53,7 @@ function setContent(content) {
     top: 0,
     left: 0
   })
-};
+}
 function parseCode(code) {
   try {
     var hashBang = null
@@ -81,15 +81,6 @@ function parseCode(code) {
 function matchSelector() {
   var code = getContent();
   return detect(code);
-}
-function scrollToPos(start) {
-  var pos = window.editorView.state.doc.lineAt(start).from;
-  window.editorView.dispatch({
-    effects: EditorView.scrollIntoView(pos, {
-      y: 'center',
-      x: 'nearest'
-    })
-  });
 }
 function setSelection(ret, key, shiftKey) {
   if (shiftKey && ret[key].active === 0) {
@@ -125,12 +116,19 @@ function makeSelection(start, end) {
   if (start === end) {
     end = start + 1;
   }
+  var range = EditorSelection.range(start, end)
   var selection = EditorSelection.create([
-    EditorSelection.range(start, end),
+    range,
     EditorSelection.cursor(0)
   ], 1)
-  window.editorView.dispatch({ selection })
-  scrollToPos(start)
+  var effects = EditorView.scrollIntoView(range, {
+    x: "center",
+    y: "center"
+  })
+  window.editorView.dispatch({
+    selection,
+    effects
+  })
 }
 function clearSelection() {
   window.editorView.dispatch({
