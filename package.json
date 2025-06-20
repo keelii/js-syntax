@@ -1,8 +1,8 @@
 {
   "name": "js-syntax-detector",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "main": "src/lib/detect.js",
-  "files": ["bin/js-syntax"],
+  "files": ["bin/js-syntax", "js-syntax.bundle.js"],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
