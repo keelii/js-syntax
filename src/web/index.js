@@ -2,8 +2,8 @@ import { basicSetup, EditorView } from 'codemirror'
 import { javascript } from '@codemirror/lang-javascript'
 import { Compartment, EditorSelection } from '@codemirror/state'
 import { MyParser } from '../lib/parser.js';
-import {detect} from "../lib/detect.js";
-import SimpleCode from "../lib/code.txt";
+import { detect } from '../lib/detect.js';
+import SimpleCode from '../lib/code.txt';
 
 
 var compartment = new Compartment();
@@ -17,7 +17,7 @@ var updateListenerExtension = EditorView.updateListener.of(function (update) {
 var wrapping = false;
 
 window.jss = {}
-window.jss.formatCode = function() {
+window.jss.formatCode = function () {
   var content = getContent()
   var results = beautifier.js(content)
   setContent(results)
@@ -34,9 +34,11 @@ window.jss.toggleWrap = function () {
 function getSize() {
   return window.editorView.state.doc.length
 }
+
 function getContent(content) {
   return window.editorView.state.doc.toString()
 }
+
 function setContent(content) {
   window.editorView.dispatch({
     selection: {
@@ -54,6 +56,7 @@ function setContent(content) {
     left: 0
   })
 }
+
 function parseCode(code) {
   try {
     var hashBang = null
@@ -78,10 +81,12 @@ function parseCode(code) {
     toastMessage(e)
   }
 }
+
 function matchSelector() {
   var code = getContent();
   return detect(code);
 }
+
 function setSelection(ret, key, shiftKey) {
   if (shiftKey && ret[key].active === 0) {
     ret[key].active = ret[key].locations.length + 1
@@ -112,6 +117,7 @@ function setSelection(ret, key, shiftKey) {
   makeSelection(location.start.index, location.end.index)
   activeEl.innerText = ret[key].active;
 }
+
 function makeSelection(start, end) {
   if (start === end) {
     end = start + 1;
@@ -122,14 +128,15 @@ function makeSelection(start, end) {
     EditorSelection.cursor(0)
   ], 1)
   var effects = EditorView.scrollIntoView(range, {
-    x: "center",
-    y: "center"
+    x: 'center',
+    y: 'center'
   })
   window.editorView.dispatch({
     selection,
     effects
   })
 }
+
 function clearSelection() {
   window.editorView.dispatch({
     selection: {anchor: window.editorView.state.selection.main.from}
@@ -142,6 +149,7 @@ function locateSyntaxKey(e, ret) {
     setSelection(ret, key, e.shiftKey);
   }
 }
+
 function detectSyntax() {
   var ret = matchSelector()
   var tar = document.querySelector('#split-1')
@@ -189,6 +197,7 @@ function toastMessage(e) {
     }).showToast();
   }
 }
+
 function isValidUrl(url) {
   try {
     new URL(url);
@@ -205,8 +214,8 @@ function getQueryUrl() {
     if (queryUrl === null) {
       return false
     }
-    if (queryUrl === "") {
-      return toastMessage("No URL provided in query string, using default code.");
+    if (queryUrl === '') {
+      return toastMessage('No URL provided in query string, using default code.');
     }
     if (!isValidUrl(queryUrl)) {
       return toastMessage('Invalid URL provided in query string=' + queryUrl);
@@ -214,6 +223,7 @@ function getQueryUrl() {
     return queryUrl
   }
 }
+
 function DOMContentLoaded() {
   init()
 
@@ -223,15 +233,15 @@ function DOMContentLoaded() {
 
   if (queryUrl) {
     var u = new URL(queryUrl)
-    if (u.pathname.indexOf(":") > -1) {
+    if (u.pathname.indexOf(':') > -1) {
       if (/\d+:\d+$/.test(queryUrl)) {
         var parts = queryUrl.split(':');
         PARAM_LOC = [Math.max(Number(parts[2]), 1), Math.max(Number(parts[3]), 1)]
-        PARAM_URL = parts[0] + ":" + parts[1];
+        PARAM_URL = parts[0] + ':' + parts[1];
       }
 
       if (!PARAM_URL) {
-        return toastMessage("URL Not valid, please check the query string.");
+        return toastMessage('URL Not valid, please check the query string.');
       }
     } else {
       PARAM_URL = queryUrl
@@ -240,19 +250,19 @@ function DOMContentLoaded() {
     // console.log(PARAM_URL, PARAM_LOC)
 
     fetch(PARAM_URL)
-      .then(response => response.text())
-      .then(text => {
-        setContent(text);
-        if (PARAM_LOC.length) {
-          var pos = window.editorView.state.doc.line(PARAM_LOC[0]).from + PARAM_LOC[1]
-          makeSelection(pos - 1, pos);
-        }
-        detectSyntax()
-      })
-      .catch(error => {
-        console.error('Error fetching the URL:', error);
-        toastMessage(error);
-      });
+    .then(response => response.text())
+    .then(text => {
+      setContent(text);
+      if (PARAM_LOC.length) {
+        var pos = window.editorView.state.doc.line(PARAM_LOC[0]).from + PARAM_LOC[1]
+        makeSelection(pos - 1, pos);
+      }
+      detectSyntax()
+    })
+    .catch(error => {
+      console.error('Error fetching the URL:', error);
+      toastMessage(error);
+    });
   } else {
     setContent(SimpleCode)
     detectSyntax()
@@ -262,6 +272,7 @@ function DOMContentLoaded() {
 function EditorContentChange() {
   detectSyntax()
 }
+
 function OrientationChange() {
   window.editorView.destroy()
   window.splitter.destroy()
@@ -273,12 +284,12 @@ function OrientationChange() {
 function init() {
   try {
     window.editorView = new EditorView({
-      doc: "",
+      doc: '',
       extensions: [updateListenerExtension, basicSetup, compartment.of([]), javascript()],
       parent: document.getElementById('editor')
     })
   } catch (e) {
-    toastMessage("Error initializing splitter/editor: " + e);
+    toastMessage('Error initializing splitter/editor: ' + e);
   }
 }
 

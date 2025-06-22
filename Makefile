@@ -15,6 +15,6 @@ run-url:
 build: build-web build-cli
 	@echo "Build completed successfully."
 compile-bin:
-	tjs compile js-syntax.bundle.js bin/js-syntax
+	tjs compile js-syntax.bundle.js bin/macos/js-syntax
 compile: build-cli compile-bin
 	@echo "Compilation completed successfully."

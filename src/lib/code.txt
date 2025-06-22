@@ -8,6 +8,7 @@ var [a, b] = [1, 2];
 var {x, y} = {x: 1, y: 2};
 var f = () => {};
 var g = {a}
+using h = {};
 for (var a of b) {}
 function i(a = 0) {}
 function j(...a) {}
