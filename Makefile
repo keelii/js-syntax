@@ -18,3 +18,6 @@ compile-bin:
 	tjs compile js-syntax.bundle.js bin/darwin/js-syntax
 compile: build-cli compile-bin
 	@echo "Compilation completed successfully."
+publish:
+	npm publish --registry=https://registry.npmjs.com/ --access public
+	@echo "Published to npm successfully."
