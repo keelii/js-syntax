@@ -30,7 +30,7 @@ check it online [js-syntax](https://js-syntax.com).
 
 ## CLI tool
 
-# Darwin
+### Darwin
 
 ```bash
 curl -o js-syntax  https://unpkg.com/js-syntax-detector@1.0.6/bin/darwin/js-syntax
@@ -38,7 +38,7 @@ chmod +x js-syntax
 ./js-syntax --help
 ```
 
-# Linux(x86_64)
+### Linux(x86_64)
 
 ```bash
 curl -o js-syntax  https://unpkg.com/js-syntax-detector@1.0.6/bin/linux/js-syntax
