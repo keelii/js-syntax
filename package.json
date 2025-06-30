@@ -1,6 +1,6 @@
 {
   "name": "js-syntax-detector",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "main": "src/lib/detect.js",
   "files": ["bin/js-syntax", "js-syntax.bundle.js"],
   "scripts": {

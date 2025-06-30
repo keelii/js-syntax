@@ -30,10 +30,18 @@ check it online [js-syntax](https://js-syntax.com).
 
 ## CLI tool
 
-For now **only** for macOS(Apple Silicon).
+# Darwin
 
 ```bash
-curl -o js-syntax  https://unpkg.com/js-syntax-detector@1.0.1/bin/js-syntax
+curl -o js-syntax  https://unpkg.com/js-syntax-detector@1.0.5/bin/darwin/js-syntax
+chmod +x js-syntax
+./js-syntax --help
+```
+
+# Linux(x86_64)
+
+```bash
+curl -o js-syntax  https://unpkg.com/js-syntax-detector@1.0.5/bin/linux/js-syntax
 chmod +x js-syntax
 ./js-syntax --help
 ```

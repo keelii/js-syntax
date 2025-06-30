@@ -1,7 +1,7 @@
 import path from "tjs:path";
 import getopts from "tjs:getopts";
 import {detect} from "../lib/detect.js";
-import {decodeText, isURL} from "./utils.js";
+import {decodeText, isURL, readStdin} from "./utils.js";
 import packageJson from "../../package.json" with { type: "json" };
 
 var opts = getopts(tjs.args, {
@@ -13,7 +13,7 @@ var opts = getopts(tjs.args, {
 
 var document = `Usage: js-syntax [options] <file|url>
   -h, --help               Show this help message and exit
-  -v, --version              Show version number and quit
+  -v, --version            Show version number and exit
 Example:
   js-syntax https://example.com/script.js
   js-syntax /path/to/local/script.js`;
@@ -33,31 +33,38 @@ if (opts.v) {
     console.log(packageJson.version)
     tjs.exit(0)
 }
-if (args.length < 1) {
-    console.log(document)
-    tjs.exit(0)
-}
 
 var text = ""
 var file = ""
 
-try {
-    if (isURL(args[0])) {
-        var response = await fetch(args[0])
-        text = await response.text()
-        if (text.trim() === "") {
-            console.error("Error: The URL returned an empty response.");
-            tjs.exit(1);
-        }
-        file = args[0]
+if (args.length < 1) {
+    if (tjs.stdin.type === "pipe") {
+        file = "stdin"
+        text = await readStdin()
     } else {
-        var res = await tjs.readFile(args[0])
-        text = decodeText(res)
-        file = path.resolve(args[0])
+        console.log(document)
     }
-} catch (e) {
-    console.error("Error reading file or URL:", e);
-    tjs.exit(1);
+}
+
+if (!text) {
+    try {
+        if (isURL(args[0])) {
+            var response = await fetch(args[0])
+            text = await response.text()
+            if (text.trim() === "") {
+                console.error("Error: The URL returned an empty response.");
+                tjs.exit(1);
+            }
+            file = args[0]
+        } else {
+            var res = await tjs.readFile(args[0])
+            text = decodeText(res)
+            file = path.resolve(args[0])
+        }
+    } catch (e) {
+        console.error("Error reading file or URL:", e);
+        tjs.exit(1);
+    }
 }
 
 var ret = detect(text)
