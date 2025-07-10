@@ -224,6 +224,27 @@ function getQueryUrl() {
   }
 }
 
+function forceFetch(url, callback) {
+  fetch(url)
+    .then(response => response.text())
+    .then(callback)
+    .catch(error => {
+      fetch("//break-cors.arp.sh/?url=" + encodeURIComponent(url))
+          .then(response => {
+            if (response.status === 200) {
+              return response.text()
+            } else {
+              throw new Error('Failed to fetch the URL: ' + response.statusText);
+            }
+          })
+          .then(callback)
+          .catch(error => {
+            console.error('Error fetching the URL:', error);
+            toastMessage(error);
+          });
+    });
+}
+
 function DOMContentLoaded() {
   init()
 
@@ -248,20 +269,13 @@ function DOMContentLoaded() {
     }
 
     // console.log(PARAM_URL, PARAM_LOC)
-
-    fetch(PARAM_URL)
-    .then(response => response.text())
-    .then(text => {
+    forceFetch(PARAM_URL, (text) => {
       setContent(text);
       if (PARAM_LOC.length) {
         var pos = window.editorView.state.doc.line(PARAM_LOC[0]).from + PARAM_LOC[1]
         makeSelection(pos - 1, pos);
       }
       detectSyntax()
-    })
-    .catch(error => {
-      console.error('Error fetching the URL:', error);
-      toastMessage(error);
     });
   } else {
     setContent(SimpleCode)
