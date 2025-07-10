@@ -1,6 +1,6 @@
 import { basicSetup, EditorView } from 'codemirror'
 import { javascript } from '@codemirror/lang-javascript'
-import { Compartment, EditorSelection } from '@codemirror/state'
+import { Compartment, EditorSelection, Text } from '@codemirror/state'
 import { MyParser } from '../lib/parser.js';
 import { detect } from '../lib/detect.js';
 import SimpleCode from '../lib/code.txt';
@@ -29,6 +29,12 @@ window.jss.toggleWrap = function () {
       wrapping ? EditorView.lineWrapping : []
     )]
   });
+}
+window.jss.goToLine = function (line) {
+  var defaultLine = PARAM_LOC.length > 0 ? PARAM_LOC.join(":") : "1:1";
+  var loc = prompt("Jump to line:column", defaultLine)
+  var parts = loc.split(':').map(Number)
+  makeSelectionLine(parts[0] || 1, parts[1] || 1)
 }
 
 function getSize() {
@@ -114,15 +120,11 @@ function setSelection(ret, key, shiftKey) {
     return;
   }
 
-  makeSelection(location.start.index, location.end.index)
+  makeSelectionLoc(location.start.index, location.end.index)
   activeEl.innerText = ret[key].active;
 }
 
-function makeSelection(start, end) {
-  if (start === end) {
-    end = start + 1;
-  }
-  var range = EditorSelection.range(start, end)
+function makeSelection(range) {
   var selection = EditorSelection.create([
     range,
     EditorSelection.cursor(0)
@@ -135,6 +137,26 @@ function makeSelection(start, end) {
     selection,
     effects
   })
+}
+function makeSelectionLine(line, col) {
+  // var pos = 0
+  // if (line < 0) {
+  //   pos = editorView.state.doc.line(editorView.state.doc.lines + line + 1)
+  // } else {
+  //   pos = editorView.state.doc.line(Math.max(1, line))
+  // }
+  var pos = editorView.state.doc.line(Math.max(1, line))
+  var c = Math.min(pos.text.length, Math.max(1, col))
+  var start = pos.from + c
+  var range = EditorSelection.range(start - 1, start)
+  makeSelection(range)
+}
+function makeSelectionLoc(start, end) {
+  if (start === end) {
+    end = start + 1;
+  }
+  var range = EditorSelection.range(start, end)
+  makeSelection(range)
 }
 
 function clearSelection() {
@@ -245,11 +267,11 @@ function forceFetch(url, callback) {
     });
 }
 
+var PARAM_LOC = []
 function DOMContentLoaded() {
   init()
 
   var PARAM_URL = ''
-  var PARAM_LOC = []
   var queryUrl = getQueryUrl()
 
   if (queryUrl) {
@@ -273,7 +295,7 @@ function DOMContentLoaded() {
       setContent(text);
       if (PARAM_LOC.length) {
         var pos = window.editorView.state.doc.line(PARAM_LOC[0]).from + PARAM_LOC[1]
-        makeSelection(pos - 1, pos);
+        makeSelectionLoc(pos - 1, pos);
       }
       detectSyntax()
     });
