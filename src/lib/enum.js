@@ -96,9 +96,14 @@ export var JsSyntaxEnum = {
     ref: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes'
   },
   ImportExport: {
-    selector: 'ImportDeclaration,ExportNamedDeclaration,ExportAllDeclaration',
+    selector: 'ImportDeclaration:not([attributes]),ExportNamedDeclaration,ExportAllDeclaration',
     name: '模块导入导出',
     ref: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/import'
+  },
+  ImportAttribute: {
+    selector: 'ImportDeclaration[attributes.0.type=ImportAttribute]',
+    name: '导入模块属性',
+    ref: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/import/with'
   },
   Generator: {
     selector: '[generator=true]',

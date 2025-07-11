@@ -36,6 +36,7 @@ var a = /^a/y;
 var a = b?.c
 var a = b ?? ""
 import("abc")
+import json from "./foo.json" with { type: "json" };
 var a = a ??= 2;
 var a = b ||= 2;
 var a = 100_100;

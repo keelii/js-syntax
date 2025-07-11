@@ -48,9 +48,24 @@ export function parseCode(code) {
   }
 }
 
+function parseAst(ast) {
+  return JSON.parse(
+      JSON.stringify(
+          ast,
+          (key, value) => {
+            return typeof value === "bigint"
+                ? Number(value)
+                : value
+          }
+      )
+  )
+}
+
 export function detect(code) {
   var ast = parseCode(code)
   var result = {};
+
+  console.debug("ast", parseAst(ast).body);
 
   if (!ast) return result;
 
@@ -65,9 +80,8 @@ export function detect(code) {
   for (var key in JsSyntaxEnum) {
     try {
       var ret = esquery.match(ast, ESQueryMap[key])
-      // console.debug(key, ret, JsSyntaxEnum[key].__selector)
-      // console.log(JSON.stringify(ret))
       if (ret && ret.length > 0) {
+        // console.debug(key, ret, JsSyntaxEnum[key].__selector)
         result[key] = {
           active: 0,
           syntax: JsSyntaxEnum[key],
