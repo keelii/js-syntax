@@ -26,7 +26,7 @@ export var JsSyntaxEnum = {
     ref: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals#tagged_templates'
   },
   DestructuringAssignment: {
-    selector: 'AssignmentExpression>ArrayPattern,VariableDeclarator>ObjectPattern',
+    selector: 'VariableDeclarator>ArrayPattern,VariableDeclarator>ObjectPattern',
     name: '解构赋值',
     ref: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Destructuring'
   },
