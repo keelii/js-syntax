@@ -8,9 +8,9 @@ dev-cli:
 build-web:
 	esbuild src/web/index.js --bundle --outfile=index.min.js --minify
 build-cli:
-	esbuild src/cli/js-syntax.js --bundle --outfile=js-syntax.bundle.js --minify \
+	esbuild src/cli/js-syntax.js --bundle --outfile=js-syntax.js \
 		--platform=neutral --main-fields=main,module "--external:tjs:*"
-	@echo "\n// version $(VERSION)" >> ./js-syntax.bundle.js;
+	@echo "\n// version $(VERSION)" >> ./js-syntax.js;
 run-file:
 	tjs run ./js-syntax.js src/lib/code.txt
 run-url:
@@ -19,14 +19,14 @@ build: build-web build-cli
 	@echo "Build completed successfully."
 compile-bin-linux: build-cli
 	mkdir -p bin/linux
-	tjs compile js-syntax.bundle.js bin/linux/js-syntax
-compile-bin-darwin: build-cli
+	tjs compile js-syntax.js bin/linux/js-syntax
+compile-bin-darwin:
 	mkdir -p bin/darwin
-	tjs compile js-syntax.bundle.js bin/darwin/js-syntax
+	tjs compile js-syntax.js bin/darwin/js-syntax
 compile-bin: compile-bin-darwin
 	@echo "Binary compilation completed successfully."
 compile: build-cli compile-bin
 	@echo "Compilation completed successfully."
-publish:
+publish: compile
 	npm publish --registry=https://registry.npmjs.com/ --access public
 	@echo "Published to npm successfully."
