@@ -65,7 +65,7 @@ export function detect(code) {
   var ast = parseCode(code)
   var result = {};
 
-  console.debug("ast", parseAst(ast).body);
+  // console.debug("ast", parseAst(ast).body);
 
   if (!ast) return result;
 
