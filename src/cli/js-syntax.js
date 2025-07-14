@@ -3,18 +3,23 @@ import getopts from "tjs:getopts";
 import {detect} from "../lib/detect.js";
 import {decodeText, isURL, readStdin} from "./utils.js";
 import packageJson from "../../package.json" with { type: "json" };
+import {arrayBufferToFile} from "../lib/stream";
+import {doUpgrade} from "./upgrade";
 
 var opts = getopts(tjs.args, {
     alias: {
+        u: "upgrade",
         h: "help",
         v: "version"
     }
 })
 
 var document = `Usage: js-syntax [options] <file|url>
+  -u, --upgrade            Do upgrading js-syntax itself
   -h, --help               Show this help message and exit
   -v, --version            Show version number and exit
 Example:
+  js-syntax --upgrade
   js-syntax https://example.com/script.js
   js-syntax /path/to/local/script.js`;
 
@@ -32,6 +37,15 @@ if (opts.h) {
 if (opts.v) {
     console.log(packageJson.version)
     tjs.exit(0)
+}
+if (opts.u) {
+    if (tjs.system.platform === "windows") {
+        console.error("Error: Upgrading js-syntax is not supported on Windows platform.");
+        tjs.exit(1);
+    } else {
+        await doUpgrade(packageJson.version)
+        tjs.exit(0)
+    }
 }
 
 var text = ""
