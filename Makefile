@@ -10,7 +10,8 @@ build-web:
 build-cli:
 	esbuild src/cli/js-syntax.js --bundle --outfile=js-syntax.js \
 		--platform=neutral --main-fields=main,module "--external:tjs:*"
-	@echo "\n// version $(VERSION)" >> ./js-syntax.js;
+	@echo "" >> ./js-syntax.js;
+	@echo "// version $(VERSION)" >> ./js-syntax.js;
 run-file:
 	tjs run ./js-syntax.js src/lib/code.txt
 run-url:
