@@ -1,6 +1,6 @@
 {
   "name": "js-syntax-detector",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "main": "src/lib/detect.js",
   "files": [
     "bin/darwin/js-syntax",
