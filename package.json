@@ -5,7 +5,7 @@
   "files": [
     "bin/darwin/js-syntax",
     "bin/linux/js-syntax",
-    "js-syntax.bundle.js"
+    "js-syntax.js"
   ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
