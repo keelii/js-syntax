@@ -20,16 +20,16 @@ var opts = getopts(tjs.args, {
     alias: {
         u: "upgrade",
         h: "help",
-        V: "version",
-        v: "verbose",
+        V: "verbose",
+        v: "version",
     }
 })
 
 var document = `Usage: js-syntax [options] <file|url>
   -u, --upgrade            Do upgrading js-syntax itself
   -h, --help               Show this help message and exit
-  -v, --verbose            Show detailed information
-  -V, --version            Show version number and exit
+  -V, --verbose            Show version number and exit
+  -v, --version            Show detailed information
 Example:
   js-syntax --upgrade
   js-syntax https://example.com/script.js
@@ -59,8 +59,13 @@ if (opts.u) {
         console.error("[✘] Error: Upgrading js-syntax is not supported on Windows platform.");
         tjs.exit(1);
     } else {
-        await doUpgrade(packageJson.version)
-        tjs.exit(0)
+        try {
+            await doUpgrade(packageJson.version)
+            tjs.exit(0)
+        } catch (e) {
+            console.error(e)
+            tjs.exit(1);
+        }
     }
 }
 
@@ -71,6 +76,7 @@ if (args.length < 1) {
         showResult("stdin", res)
     } else {
         console.log(document)
+        tjs.exit(0)
     }
 }
 
