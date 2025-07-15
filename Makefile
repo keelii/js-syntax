@@ -18,15 +18,15 @@ run-url:
 	tjs run ./js-syntax.js https://unpkg.com/js-syntax-detector@1.0.0/src/lib/code.txt
 build: build-web build-cli
 	@echo "Build completed successfully."
-compile-bin-linux: build-cli
+compile-linux: build-cli
 	mkdir -p bin/linux
 	tjs compile js-syntax.js bin/linux/js-syntax
-compile-bin-darwin:
+compile-darwin:
 	mkdir -p bin/darwin
 	tjs compile js-syntax.js bin/darwin/js-syntax
-compile-bin: compile-bin-darwin
+compile-all: compile-darwin
 	@echo "Binary compilation completed successfully."
-compile: build-cli compile-bin
+compile: build-cli compile-all
 	@echo "Compilation completed successfully."
 publish: compile
 	npm publish --registry=https://registry.npmjs.com/ --access public
