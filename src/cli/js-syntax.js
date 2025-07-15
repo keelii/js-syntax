@@ -4,6 +4,17 @@ import packageJson from "../../package.json" with { type: "json" };
 import {doUpgrade} from "./upgrade";
 import {detectText} from "./detector";
 
+function showResult(type, count, total = 0) {
+    var totalStr = total ? `${total} ${type}` : type;
+    if (count) {
+        console.log(`[⚠] Found ${count} newer syntax(ES6+) in ${totalStr}.`);
+        tjs.exit(1);
+    } else {
+        console.log(`[»] No newer syntax in ${totalStr}.`);
+        tjs.exit(0);
+    }
+}
+
 
 var opts = getopts(tjs.args, {
     alias: {
@@ -57,13 +68,7 @@ if (args.length < 1) {
     if (tjs.stdin.type === "pipe") {
         var text = await readStdin()
         var res = detectText(text, { file: "stdin", opts })
-        if (res) {
-            console.log(`[⚠] Found ${res} newer syntax(ES6+) in stdin.`);
-            tjs.exit(1);
-        } else {
-            console.log("[✓] No newer syntax in stdin.");
-            tjs.exit(0);
-        }
+        showResult("stdin", res)
     } else {
         console.log(document)
     }
@@ -100,8 +105,4 @@ for (const arg of args) {
     }
 }
 
-// console.log(newerSyntaxCount)
-if (newerSyntaxCount > 1) {
-    console.log(`[⚠] Found ${newerSyntaxCount} newer syntax(ES6+) in the files.`);
-    tjs.exit(1);
-}
+showResult("files", newerSyntaxCount, args.length)
