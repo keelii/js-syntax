@@ -1,11 +1,12 @@
 {
   "name": "js-syntax-detector",
-  "version": "1.0.11",
+  "version": "1.0.12",
   "main": "src/lib/detect.js",
   "files": [
     "bin/darwin/js-syntax",
     "bin/linux/js-syntax",
-    "js-syntax.js"
+    "js-syntax.js",
+    "js-syntax.js.map"
   ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"

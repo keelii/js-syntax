@@ -9,7 +9,7 @@ build-web:
 	esbuild src/web/index.js --bundle --outfile=index.min.js --minify
 build-cli:
 	esbuild src/cli/js-syntax.js --bundle --outfile=js-syntax.js \
-		--platform=neutral --main-fields=main,module "--external:tjs:*"
+		--sourcemap --platform=neutral --main-fields=main,module "--external:tjs:*"
 	@echo "" >> ./js-syntax.js;
 	@echo "// version $(VERSION)" >> ./js-syntax.js;
 run-file:

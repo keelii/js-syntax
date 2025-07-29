@@ -67,7 +67,7 @@ export function detect(code) {
 
   // console.debug("ast", parseAst(ast).body);
 
-  if (!ast) return result;
+  if (!ast) return null
 
   if (ast._hashBang) {
     result.Hashbang = {

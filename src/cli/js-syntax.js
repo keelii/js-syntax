@@ -7,10 +7,10 @@ import {detectText} from "./detector";
 function showResult(type, count, total = 0) {
     var totalStr = total ? `${total} ${type}` : type;
     if (count) {
-        console.log(`[⚠] Found ${count} newer syntax(ES6+) in ${totalStr}.`);
+        console.log(`[⇒] Found ${count} newer syntax(ES6+) in ${totalStr}.`);
         tjs.exit(1);
     } else {
-        console.log(`[»] No newer syntax in ${totalStr}.`);
+        // console.log(`[»] No newer syntax in ${totalStr}.`);
         tjs.exit(0);
     }
 }
@@ -73,6 +73,7 @@ if (args.length < 1) {
     if (tjs.stdin.type === "pipe") {
         var text = await readStdin()
         var res = detectText(text, { file: "stdin", opts })
+        if (res < 0) tjs.exit(1);
         showResult("stdin", res)
     } else {
         console.log(document)
@@ -94,6 +95,7 @@ for (const arg of args) {
                 tjs.exit(1);
             }
             var yes = detectText(text, { file: arg, opts });
+            if (yes < 0) tjs.exit(1);
             if (yes) newerSyntaxCount += yes
         } else {
             var res = await tjs.readFile(arg)
@@ -103,6 +105,7 @@ for (const arg of args) {
                 tjs.exit(1);
             }
             var yes = detectText(text, { file: arg, opts });
+            if (yes < 0) tjs.exit(1);
             if (yes) newerSyntaxCount += yes
         }
     } catch (e) {
