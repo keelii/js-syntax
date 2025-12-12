@@ -36,19 +36,8 @@ self.addEventListener('fetch', event => {
 
     // 对 navigation 请求（页面刷新/路由导航）可以优先返回缓存的 index.html 或提供离线页
     if (req.mode === 'navigate') {
-        event.respondWith(
-            caches.match('/').then(cachedResp => {
-                // 优先返回缓存的 ，如果没有则去网络，再没有则返回离线页面（如果提供的话）
-                return cachedResp || fetch(req).then(networkResp => {
-                    // 可选：把最新的  更新到缓存
-                    caches.open(CACHE_NAME).then(cache => cache.put('/', networkResp.clone()));
-                    return networkResp;
-                }).catch((e) => {
-                  console.error(e)
-                });
-            })
-        );
-        return;
+      event.respondWith(handleNavigation());
+      return;
     }
 
     // 对静态文件采用 cache-first + 更新缓存的策略
@@ -77,3 +66,34 @@ self.addEventListener('fetch', event => {
         })
     );
 });
+
+async function handleNavigation() {
+  const cache = await caches.open(CACHE_NAME);
+
+  // 尝试获取缓存的首页
+  const cached = await cache.match('/');
+
+  try {
+    // Cloudflare Pages 会 redirect，因此强制 follow
+    const resp = await fetch('/', { redirect: 'follow' });
+
+    // 如果是非重定向有效响应，缓存它
+    if (resp.ok && !resp.redirected) {
+      cache.put('/', resp.clone());
+    }
+
+    return resp; // ALWAYS return Response
+  } catch (err) {
+
+    console.error('[SW] navigation fetch failed:', err);
+
+    // 有缓存就返回缓存，没有就返回 fallback Response
+    if (cached) return cached;
+
+    return new Response(
+      'Offline',
+      { status: 503, headers: { 'Content-Type': 'text/plain' } }
+    );
+  }
+}
+
