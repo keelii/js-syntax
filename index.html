@@ -524,7 +524,7 @@
 <script src="./index.min.js"></script>
 <script async src="./beautifier.min.js"></script>
 <script>
-    if ('serviceWorker' in navigator && /dbg=sw/.test(location.href)) {
+    if ('serviceWorker' in navigator && /sw/.test(location.href)) {
         window.addEventListener('load', () => {
             navigator.serviceWorker.register('/sw.js')
                 .then(reg => {
