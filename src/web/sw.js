@@ -1,5 +1,5 @@
 // sw.js
-const CACHE_NAME = 'site-static-v1.1'; // 更新名字以触发重新缓存
+const CACHE_NAME = 'site-static-v1.2'; // 更新名字以触发重新缓存
 const ASSETS = [
     '/',                   // 根页面（视你的路由而定）
     '/index.html',
