@@ -1,12 +1,14 @@
 VERSION := $(shell grep "\"version" package.json | cut -d ":" -f 2 | tr -d ' ",')
 
 dev-web:
-	esbuild src/web/index.js --bundle --outfile=index.min.js --watch
+	esbuild src/web/index.js --bundle --outfile=index.min.js --watch &
+	esbuild src/web/sw.js --bundle --outfile=sw.js --watch
 dev-cli:
 	esbuild src/cli/js-syntax.js --bundle --outfile=js-syntax.js --watch \
 		--platform=neutral --main-fields=main,module "--external:tjs:*"
 build-web:
 	esbuild src/web/index.js --bundle --outfile=index.min.js --minify
+	esbuild src/web/sw.js --bundle --outfile=sw.js --minify
 build-cli:
 	esbuild src/cli/js-syntax.js --bundle --outfile=js-syntax.js \
 		--platform=neutral --main-fields=main,module "--external:tjs:*"
