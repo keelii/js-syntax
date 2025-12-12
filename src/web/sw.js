@@ -2,8 +2,7 @@
 const CACHE_NAME = 'site-static-v1.2'; // 更新名字以触发重新缓存
 const ASSETS = [
     '/',                   // 根页面（视你的路由而定）
-    '/index.html',
-    'index.min.js',
+    '/index.min.js',
     '/beautifier.min.js',
     // '/offline.html'      // 如果你想在离线时返回一个离线页面，取消注释并把它加入到服务器
 ];
@@ -38,13 +37,15 @@ self.addEventListener('fetch', event => {
     // 对 navigation 请求（页面刷新/路由导航）可以优先返回缓存的 index.html 或提供离线页
     if (req.mode === 'navigate') {
         event.respondWith(
-            caches.match('/index.html').then(cachedResp => {
-                // 优先返回缓存的 index.html，如果没有则去网络，再没有则返回离线页面（如果提供的话）
+            caches.match('/').then(cachedResp => {
+                // 优先返回缓存的 ，如果没有则去网络，再没有则返回离线页面（如果提供的话）
                 return cachedResp || fetch(req).then(networkResp => {
-                    // 可选：把最新的 index.html 更新到缓存
-                    caches.open(CACHE_NAME).then(cache => cache.put('/index.html', networkResp.clone()));
+                    // 可选：把最新的  更新到缓存
+                    caches.open(CACHE_NAME).then(cache => cache.put('/', networkResp.clone()));
                     return networkResp;
-                }).catch(() => caches.match('/offline.html'));
+                }).catch((e) => {
+                  console.error(e)
+                });
             })
         );
         return;
