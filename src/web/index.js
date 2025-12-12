@@ -33,8 +33,10 @@ window.jss.toggleWrap = function () {
 window.jss.goToLine = function (line) {
   var defaultLine = PARAM_LOC.length > 0 ? PARAM_LOC.join(":") : "1:1";
   var loc = prompt("Jump to line:column", defaultLine)
-  var parts = loc.split(':').map(Number)
-  makeSelectionLine(parts[0] || 1, parts[1] || 1)
+  if (loc) {
+    var parts = loc.split(':').map(Number)
+    makeSelectionLine(parts[0] || 1, parts[1] || 1)
+  }
 }
 
 function getSize() {
